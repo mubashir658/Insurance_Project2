@@ -1,0 +1,63 @@
+/* Navbar container */
+#nav {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(233, 230, 230);
+  height: 90px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px; /* Adjusted padding */
+}
+
+/* Style the list */
+ul {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+}
+
+/* Logo / Name Styling */
+li#NAME {
+  font-weight: bold;
+  font-size: 36px;
+  cursor: pointer;
+}
+
+/* Right-side items (Contact, About, Login) */
+.nav-right {
+  margin-left: auto; /* Pushes items to the right */
+  padding-right: 82px; /* Adjust the distance from the right edge */
+  display: flex;
+  gap: 60px; /* Space between items */
+}
+
+/* Nav item styling */
+li {
+  color: rgb(15, 15, 15);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* Link styling */
+.nav-link {
+  text-decoration: none;
+  color: inherit; /* Keeps text color same as other nav items */
+  transition: color 0.3s ease;
+}
+
+/* Hover effect */
+li:hover,
+.nav-link:hover {
+  color: blue;
+}
+.nav-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-link:hover {
+  color: blue;
+}
