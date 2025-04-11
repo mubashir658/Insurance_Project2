@@ -1,0 +1,78 @@
+.policy-template {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  
+  .policy-header {
+    text-align: center;
+    position: relative;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #eee;
+  }
+  
+  .policy-badge {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: #ff6b6b;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+  
+  .feature-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: #f8f9fa;
+    transition: transform 0.3s;
+  }
+  
+  .duration-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  
+  .riders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .rider-card {
+    padding: 1.5rem;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .rider-card.selected {
+    border-color: #4cd137;
+    background: #f0fff4;
+  }
+  
+  .price-summary {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+  }
+  
+  /* Add remaining CSS from previous examples */
