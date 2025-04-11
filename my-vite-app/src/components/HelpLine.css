@@ -1,107 +1,179 @@
-/* Navbar Fix */
-#nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgb(200, 200, 200); /* Lighter background */
-  height: 90px;
-  display: flex;
-  align-items: center;
-  padding: 0 40px;
-  z-index: 1000;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Push content below the navbar */
 .help-container {
-  background-color: #f8f9fa;
-  text-align: center;
-  margin-top: 90px; /* Same as navbar height */
-  height: calc(100vh - 90px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  font-family: 'Arial', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-/* Image + Contact Boxes Side by Side */
 .help-content {
   display: flex;
-  height: 50vh;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Half-screen Image */
 .help-banner {
-  width: 50%;
+  flex: 1 1 50%;
+  min-height: 300px;
   background-size: cover;
   background-position: center;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  position: relative;
-}
-
-.help-text {
-  font-size: 28px;
-  font-weight: bold;
-  color: white;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 20px;
-  width: 100%;
-  text-align: center;
-  position: absolute;
-  bottom: 0;
-}
-
-/* Contact Boxes */
-.contact-boxes {
-  width: 50%;
-  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  background: #e2e3e5; /* Different background from navbar */
+  color: white;
+  text-align: center;
   padding: 20px;
+  position: relative;
+}
+
+.help-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.help-text {
+  position: relative;
+  z-index: 1;
+}
+
+.help-text h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.contact-boxes {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
 }
 
 .contact-item {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  padding: 30px;
   text-align: center;
-  width: 250px;
-  transition: background-color 0.3s, transform 0.2s;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background 0.3s ease;
+}
+
+.contact-item:last-child {
+  border-bottom: none;
 }
 
 .contact-item:hover {
-  background-color: #f0f0f0;
-  transform: scale(1.05);
-  cursor: pointer;
-  color: blue;
+  background: #e9ecef;
 }
 
-/* Review Section */
+.contact-icon {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.contact-item h3 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.contact-item p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.contact-item a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+.contact-hours {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
 .review-section {
-  padding: 20px;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+}
+
+.review-section h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.review-section p {
+  text-align: center;
+  color: #555;
+  margin-bottom: 20px;
 }
 
 textarea {
-  width: 80%;
-  height: 100px;
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #978080;
-  border-radius: 5px;
+  width: 100%;
+  min-height: 150px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 15px;
 }
 
-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  border: none;
-  background-color: #007bff;
+textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.submit-button {
+  background: #3498db;
   color: white;
-  border-radius: 5px;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+  background: #2980b9;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border-radius: 4px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .help-content {
+    flex-direction: column;
+  }
+  
+  .help-banner,
+  .contact-boxes {
+    flex: 1 1 100%;
+  }
+  
+  .contact-item {
+    padding: 20px;
+  }
 }

@@ -1,0 +1,172 @@
+.health-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+  }
+  
+  .health-title {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  
+  .health-discount {
+    color: #27ae60;
+    font-weight: 700;
+  }
+  
+  .health-section-label {
+    font-size: 1.1rem;
+    margin: 1.5rem 0 0.8rem;
+    color: #34495e;
+    font-weight: 500;
+  }
+  
+  .health-toggle-container {
+    margin-bottom: 1.5rem;
+  }
+  
+  .health-toggle-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .health-toggle-btn {
+    flex: 1;
+    padding: 0.8rem;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .health-toggle-btn.active {
+    background: #2980b9;
+    color: white;
+    border-color: #2980b9;
+  }
+  
+  .health-toggle-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.3);
+  }
+  
+  .health-members-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .health-member-card {
+    padding: 1.2rem;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .health-member-card:hover {
+    border-color: #2980b9;
+  }
+  
+  .health-member-card.selected {
+    background: #e8f4fc;
+    border-color: #2980b9;
+    color: #2980b9;
+    font-weight: 600;
+  }
+  
+  .health-member-card:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.3);
+  }
+  
+  .health-more-members-btn {
+    background: none;
+    border: none;
+    color: #27ae60;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .health-more-members-btn:hover {
+    text-decoration: underline;
+  }
+  
+  .health-continue-btn {
+    width: 100%;
+    padding: 1rem;
+    margin: 2rem 0 1rem;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .health-continue-btn:hover {
+    background: #219955;
+  }
+  
+  .health-continue-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+  }
+  
+  .health-continue-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.3);
+  }
+  
+  .health-disclaimer {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    text-align: center;
+    line-height: 1.5;
+  }
+  
+  .health-link {
+    color: #2980b9;
+    text-decoration: none;
+  }
+  
+  .health-link:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 480px) {
+    .health-container {
+      padding: 1.5rem;
+    }
+    
+    .health-title {
+      font-size: 1.5rem;
+    }
+    
+    .health-members-grid {
+      grid-template-columns: 1fr;
+    }
+  }

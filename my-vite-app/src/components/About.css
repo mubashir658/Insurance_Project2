@@ -1,35 +1,104 @@
 .about-container {
-    display: flex;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 8%;
+  gap: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.about-content {
+  flex: 1;
+  max-width: 600px;
+}
+
+.about-title {
+  margin-top: 45px;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.about-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #34495e;
+  margin-bottom: 2rem;
+}
+
+.about-features {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.feature {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  flex: 1;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.feature h3 {
+  color: #2980b9;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.feature p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #495057;
+}
+
+.about-image-container {
+  flex: 1;
+  position: relative;
+  max-width: 600px;
+}
+
+.about-image {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 1rem;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Responsive design */
+@media (max-width: 900px) {
+  .about-container {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: 100vh;
-    background-color: #f8f9fa; /* Light grey background */
-    color: #333;
-    padding: 20px;
-    margin-top:40px;
+    padding: 2rem 5%;
   }
   
-  .about-container h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #2c3e50; /* Dark blue shade */
+  .about-content, .about-image-container {
+    max-width: 100%;
   }
   
-  .about-container p {
-    font-size: 1.2rem;
-    max-width: 700px;
-    line-height: 1.6;
-    color: #555;
+  .about-title {
+    font-size: 2rem;
   }
-  
-  .about-image {
-    width: 80%;
-    max-width: 600px;
-    margin-top: 30px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 500px) {
+  .about-features {
+    flex-direction: column;
   }
-  
+}
