@@ -1,15 +1,15 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState } from "react";
 
-// Create the context
 export const AuthContext = createContext();
 
-// Create a custom hook to use the context
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
-// Create the provider component
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);

@@ -1,63 +1,161 @@
-/* Navbar container */
-#nav {
+/* Nav.css - Modern navigation styling with horizontal menu items */
+
+/* Reset and base styling */
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #2a6df4, #1e4fc7);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Logo styling */
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.nav-logo a {
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.nav-logo a:hover {
+  opacity: 0.9;
+}
+
+/* Navigation links */
+.nav-links {
+  display: flex;
+  flex-direction: row; /* Always horizontal */
+  flex-wrap: wrap; /* Allow wrapping if needed */
+  list-style: none;
   margin: 0;
   padding: 0;
-  background-color: rgb(233, 230, 230);
-  height: 90px;
-  display: flex;
+  gap: 1rem;
   align-items: center;
-  padding: 0 40px; /* Adjusted padding */
+  justify-content: flex-end;
 }
 
-/* Style the list */
-ul {
-  list-style-type: none;
-  display: flex;
-  align-items: center;
-  width: 100%;
+.nav-links li {
+  margin: 0;
   padding: 0;
 }
 
-/* Logo / Name Styling */
-li#NAME {
-  font-weight: bold;
-  font-size: 36px;
-  cursor: pointer;
-}
-
-/* Right-side items (Contact, About, Login) */
-.nav-right {
-  margin-left: auto; /* Pushes items to the right */
-  padding-right: 82px; /* Adjust the distance from the right edge */
-  display: flex;
-  gap: 60px; /* Space between items */
-}
-
-/* Nav item styling */
-li {
-  color: rgb(15, 15, 15);
-  font-size: 20px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-/* Link styling */
-.nav-link {
+.nav-links li a {
+  color: white;
   text-decoration: none;
-  color: inherit; /* Keeps text color same as other nav items */
-  transition: color 0.3s ease;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: block;
 }
 
-/* Hover effect */
-li:hover,
-.nav-link:hover {
-  color: blue;
-}
-.nav-link {
-  text-decoration: none;
-  color: inherit;
+.nav-links li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-.nav-link:hover {
-  color: blue;
+.nav-links li a.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+/* Button styling for Login */
+.nav-btn {
+  background-color: white;
+  color: #2a6df4 !important;
+  padding: 0.5rem 1.2rem !important;
+  border-radius: 50px;
+  font-weight: 600 !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn:hover {
+  background-color: #f5f5f5 !important;
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background-color: #f5f5f5 !important;
+}
+
+/* Mobile menu toggle button */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .nav-links {
+    display: none;
+    width: 100%;
+    justify-content: center;
+    padding: 1rem 0;
+    gap: 0.5rem;
+  }
+  
+  .nav-links.active {
+    display: flex;
+    animation: fadeIn 0.3s forwards;
+  }
+  
+  /* Compact items on mobile */
+  .nav-links li a {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .nav-btn {
+    padding: 0.4rem 0.8rem !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0.75rem;
+  }
+  
+  .nav-links {
+    justify-content: space-between;
+  }
+  
+  .nav-links li a {
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
+  
+  .nav-logo {
+    font-size: 1.2rem;
+  }
+}
+
+/* Animation effects */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

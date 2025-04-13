@@ -1,0 +1,70 @@
+.dashboard-container {
+    min-height: 100vh;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #007bff, #00ddeb); /* Matches Homepage, Nav */
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+  }
+  
+  .logout-btn {
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .logout-btn:hover {
+    background-color: #c82333;
+  }
+  
+  .dashboard-content {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .dashboard-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .dashboard-content p {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .dashboard-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+  
+  .action-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .action-btn:hover {
+    background-color: #0056b3;
+  }

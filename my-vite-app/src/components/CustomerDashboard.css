@@ -1,0 +1,105 @@
+.customer-dashboard-container {
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .main-content {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #007bff, #00ddeb);
+    color: white;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+  }
+  
+  .logout-btn {
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .logout-btn:hover {
+    background-color: #c82333;
+  }
+  
+  .dashboard-info {
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-info p {
+    font-size: 1rem;
+    color: #333;
+    margin: 5px 0;
+  }
+  
+  .dashboard-welcome {
+    margin-bottom: 30px;
+  }
+  
+  .dashboard-welcome p {
+    font-size: 1.1rem;
+    color: #666;
+  }
+  
+  .quick-actions {
+    margin-bottom: 30px;
+  }
+  
+  .quick-actions h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .action-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .action-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .recent-activity h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .recent-activity ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .recent-activity li {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 10px;
+  }

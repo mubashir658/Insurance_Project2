@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import "./Login.css";
 
-const Login = ({ setUser }) => {
+const Login = () => {
+  const { setUser, setIsLoggedIn } = useAuth();
   const [isAgent, setIsAgent] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -15,12 +18,13 @@ const Login = ({ setUser }) => {
     email: "",
     employeeId: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear errors when user types
+    setError("");
+    setSuccess("");
   };
 
   const validateForm = () => {
@@ -41,31 +45,66 @@ const Login = ({ setUser }) => {
 
     setIsLoading(true);
     setError("");
+    setSuccess("");
 
     const endpoint = isSignup ? "/auth/signup" : "/auth/login";
-    const payload = isSignup ? formData : {
-      email: formData.email,
-      password: formData.password,
-      isAgent
-    };
+    const payload = isSignup
+      ? formData
+      : { email: formData.email, password: formData.password };
 
     try {
       const response = await axios.post(`http://localhost:5000${endpoint}`, payload);
-      
+      console.log("API Response:", response.data);
+
       if (response.data.success) {
         if (isSignup) {
-          setIsSignup(false); // Switch to login after successful signup
-          setError(""); // Clear any previous errors
+          setIsSignup(false);
+          setFormData({ name: "", email: "", employeeId: "", password: "", confirmPassword: "" });
+          setSuccess("Account created successfully! Please log in.");
         } else {
+          if (!response.data.user || !response.data.token) {
+            throw new Error("Invalid login response");
+          }
           setUser(response.data.user);
+          setIsLoggedIn(true);
           localStorage.setItem("token", response.data.token);
-          navigate(isAgent ? "/agent-dashboard" : "/dashboard");
+          // Navigate based on employeeId
+          const isAgentUser = !!response.data.user.employeeId;
+          console.log("Login navigation:", {
+            isAgentUser,
+            employeeId: response.data.user.employeeId,
+            user: response.data.user.email,
+          });
+          navigate(isAgentUser ? "/agent-dashboard" : "/dashboard", { replace: true });
         }
+      } else {
+        const errorMessages = {
+          "User not found": "No account found with this email.",
+          "Invalid credentials": "Incorrect email or password.",
+          "Email already exists": "This email is already registered.",
+          "Error during login": "Login failed. Please try again.",
+          "Error creating user": "Signup failed. Please try again.",
+          "Server configuration error": "Server error. Please try again later.",
+        };
+        setError(errorMessages[response.data.message] || response.data.message || "An error occurred.");
       }
-      setError(response.data.message || "Action completed successfully");
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Something went wrong! Try again.";
-      setError(errorMessage);
+      console.error("Login error:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+      const errorMessages = {
+        "User not found": "No account found with this email.",
+        "Invalid credentials": "Incorrect email or password.",
+        "Email already exists": "This email is already registered.",
+        "Server configuration error": "Server error. Please try again later.",
+      };
+      setError(
+        err.response?.data?.message
+          ? errorMessages[err.response.data.message] || err.response.data.message
+          : "Unable to connect to the server. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -81,17 +120,16 @@ const Login = ({ setUser }) => {
           </span>
         </h2>
 
-        {/* Role Selection */}
         <div className="role-toggle">
-          <button 
-            onClick={() => setIsAgent(false)} 
+          <button
+            onClick={() => setIsAgent(false)}
             className={`role-btn ${!isAgent ? "active" : ""}`}
             disabled={isLoading}
           >
             Customer
           </button>
-          <button 
-            onClick={() => setIsAgent(true)} 
+          <button
+            onClick={() => setIsAgent(true)}
             className={`role-btn ${isAgent ? "active" : ""}`}
             disabled={isLoading}
           >
@@ -99,10 +137,9 @@ const Login = ({ setUser }) => {
           </button>
         </div>
 
-        {/* Error Message */}
         {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
 
-        {/* Auth Form */}
         <form className="auth-form" onSubmit={handleSubmit}>
           {isSignup && (
             <div className="form-group">
@@ -177,26 +214,14 @@ const Login = ({ setUser }) => {
             </div>
           )}
 
-          <button 
-            type="submit" 
-            className="submit-btn"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <span className="spinner"></span>
-            ) : (
-              isSignup ? "Create Account" : "Login"
-            )}
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? <span className="spinner"></span> : (isSignup ? "Create Account" : "Login")}
           </button>
         </form>
 
-        {/* Auth Toggle */}
         <div className="auth-toggle">
           {isSignup ? "Already have an account?" : "Don't have an account?"}
-          <button 
-            onClick={() => setIsSignup(!isSignup)}
-            disabled={isLoading}
-          >
+          <button onClick={() => setIsSignup(!isSignup)} disabled={isLoading}>
             {isSignup ? "Login" : "Sign Up"}
           </button>
         </div>

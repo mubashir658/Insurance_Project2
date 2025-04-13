@@ -1,25 +1,55 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Nav from "./Nav.jsx";
-import Homepage from "./Homepage.jsx";
-import Login from "./Login.jsx";
-import About from "./About.jsx";
-import HelpLine from "./HelpLine.jsx";
-import CustomerDashboard from "./CustomerDashboard.jsx"; // Correct name
+import { useAuth } from "../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
+import "./CustomerDashboard.css";
 
-function App() {
+const CustomerDashboard = () => {
+  const { user, setIsLoggedIn, setUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUser(null);
+    localStorage.removeItem("token");
+    navigate("/login", { replace: true });
+  };
+
   return (
-    <>
-      <Nav />
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/helpline" element={<HelpLine />} />
-        <Route path="/customer-dashboard" element={<CustomerDashboard />} /> 
-      </Routes>
-    </>
-  );
-}
+    <div className="customer-dashboard-container">
+      <div className="main-content">
+        <header className="dashboard-header">
+          <h1>Welcome, {user?.name || "Customer"}!</h1>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        </header>
+        <section className="dashboard-info">
+          <p>Email: {user?.email}</p>
+        </section>
+        <section className="dashboard-welcome">
+          <p>Explore your insurance options and manage your policies.</p>
+        </section>
 
-export default App;
+        <div className="quick-actions">
+          <h2>Quick Actions</h2>
+          <div className="action-buttons">
+            <button className="action-btn">View Policies</button>
+            <button className="action-btn">File a Claim</button>
+            <button className="action-btn">Update Profile</button>
+          </div>
+        </div>
+
+        <div className="recent-activity">
+          <h2>Recent Activity</h2>
+          <ul>
+            <li>Purchased Health Insurance Policy</li>
+            <li>Updated payment details</li>
+            <li>Submitted a claim request</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CustomerDashboard;
