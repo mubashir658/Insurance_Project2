@@ -1,0 +1,59 @@
+/* src/components/AgentDashboard.css */
+.agent-dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+  
+  .quick-actions {
+    margin-top: 2rem;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .action-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .action-btn:hover {
+    background-color: #2563eb;
+  }
+  
+  .recent-activity {
+    margin-top: 2rem;
+  }
+  
+  .recent-activity h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .recent-activity ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+  }
+  
+  .recent-activity li {
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+  }
