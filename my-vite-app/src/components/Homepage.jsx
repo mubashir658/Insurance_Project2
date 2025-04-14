@@ -38,7 +38,7 @@ function Homepage() {
   return (
     <div className="homepage">
       <header className="homepage-hero">
-        <h1>Welcome to Your Insurance Hub</h1>
+        <h1>Welcome to Your InsureWise</h1>
         <p>Explore coverage options tailored for you.</p>
         {!isLoggedIn ? (
           <Link to="/login" className="hero-btn">

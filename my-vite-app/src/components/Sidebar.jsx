@@ -24,21 +24,15 @@ const Sidebar = () => {
       <nav>
         <ul>
           <li>
-            <button
-              className={`menu-item ${activeItem === 'dashboard' ? 'active' : ''}`}
-              onClick={() => handleItemClick('dashboard')}
-            >
-              <span>🏠</span>
-              {!isCollapsed && 'Dashboard'}
-            </button>
+            
           </li>
           <li>
             <button
-              className={`menu-item ${activeItem === 'policies' ? 'active' : ''}`}
-              onClick={() => handleItemClick('policies')}
+              className={`menu-item ${activeItem === 'Profile' ? 'active' : ''}`}
+              onClick={() => handleItemClick('Profile')}
             >
               <span>📑</span>
-              {!isCollapsed && 'Policies'}
+              {!isCollapsed && 'Profile'}
             </button>
           </li>
           <li>

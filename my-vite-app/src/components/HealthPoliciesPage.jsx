@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // ✅ added
 import "./HealthPoliciesPage.css";
 
 const healthPolicies = [
@@ -26,6 +27,12 @@ const healthPolicies = [
 ];
 
 const HealthPoliciesPage = () => {
+  const navigate = useNavigate(); // ✅ added
+
+  const handleViewDetails = (id) => {
+    navigate(`/hpolicy${id}`); // ✅ navigate to respective page
+  };
+
   return (
     <div className="health-policies">
       <h1>Affordable Health Insurance Plans</h1>
@@ -40,7 +47,12 @@ const HealthPoliciesPage = () => {
                 <li key={index}>{feature}</li>
               ))}
             </ul>
-            <button className="select-btn">View Details</button>
+            <button
+              className="select-btn"
+              onClick={() => handleViewDetails(policy.id)} // ✅ updated
+            >
+              View Details
+            </button>
           </div>
         ))}
       </div>

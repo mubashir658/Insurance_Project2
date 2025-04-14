@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./FullDetailQuestion.css";
 
-const FullDetailQuestion= ({ onContinue }) => {
+const FullDetailQuestion = ({ onContinue }) => {
   const [formData, setFormData] = useState({
     gender: "",
     member: "",
@@ -31,7 +31,9 @@ const FullDetailQuestion= ({ onContinue }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onContinue(formData);
+    if (onContinue) {
+      onContinue(formData); // Call the onContinue function passed from the parent component
+    }
   };
 
   return (

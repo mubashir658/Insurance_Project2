@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 import './PolicyTemplate.css';
 
 const PolicyTemplate = ({ policyData }) => {
@@ -8,26 +9,32 @@ const PolicyTemplate = ({ policyData }) => {
   const [selectedRiders, setSelectedRiders] = useState([]);
   const [showQuestions, setShowQuestions] = useState(false);
   const [isEligible, setIsEligible] = useState(null);
+  const navigate = useNavigate();
 
-  // Calculate total premium
   const calculateTotal = () => {
     const base = policyData.durations[selectedDuration];
     const ridersTotal = selectedRiders.reduce((sum, rider) => sum + rider.price, 0);
     return base + ridersTotal;
   };
 
+  const handleEligibilityCheck = () => {
+    navigate('/full-detail-question'); // Changed to direct navigation
+  };
+
   return (
     <div className="policy-template">
       {/* Header Section */}
-      <div className="policy-header">
-        <h1>{policyData.name}</h1>
-        {policyData.badge && <div className="policy-badge">{policyData.badge}</div>}
-        <div className="policy-meta">
-          <span>{policyData.insurer}</span>
-          <span>•</span>
-          <span>Cover: {policyData.cover}</span>
-          <span>•</span>
-          <span>{policyData.hospitals}+ Hospitals</span>
+      <div className="policy-header blue-header">
+        <div className="policy-header-content">
+          <h1>{policyData.name}</h1>
+          {policyData.badge && <div className="policy-badge">{policyData.badge}</div>}
+          <div className="policy-meta">
+            <span>{policyData.insurer}</span>
+            <span>•</span>
+            <span>Cover: {policyData.cover}</span>
+            <span>•</span>
+            <span>{policyData.hospitals}+ Hospitals</span>
+          </div>
         </div>
       </div>
 
@@ -63,17 +70,26 @@ const PolicyTemplate = ({ policyData }) => {
 
         {/* Riders Section */}
         <div className="riders-section">
-          <h2>Optional Riders <FontAwesomeIcon icon={faQuestionCircle} className="help-icon" /></h2>
+          <h2>
+            Optional Riders{' '}
+            <FontAwesomeIcon
+              icon={faQuestionCircle}
+              className="help-icon"
+              title="Optional riders provide additional benefits at an extra cost."
+            />
+          </h2>
           <div className="riders-grid">
             {policyData.riders.map((rider, index) => (
               <div
-                className={`rider-card ${selectedRiders.some(r => r.id === rider.id) ? 'selected' : ''}`}
+                className={`rider-card ${selectedRiders.some((r) => r.id === rider.id) ? 'selected' : ''}`}
                 key={index}
-                onClick={() => setSelectedRiders(prev => 
-                  prev.some(r => r.id === rider.id) 
-                    ? prev.filter(r => r.id !== rider.id) 
-                    : [...prev, rider]
-                )}
+                onClick={() =>
+                  setSelectedRiders((prev) =>
+                    prev.some((r) => r.id === rider.id)
+                      ? prev.filter((r) => r.id !== rider.id)
+                      : [...prev, rider]
+                  )
+                }
               >
                 <h3>{rider.name}</h3>
                 <p>{rider.description}</p>
@@ -101,25 +117,16 @@ const PolicyTemplate = ({ policyData }) => {
           </div>
         </div>
 
-        {/* Eligibility Check */}
-        {!showQuestions && !isEligible && (
-          <button className="eligibility-btn" onClick={() => setShowQuestions(true)}>
-            Check Eligibility
-          </button>
-        )}
-
-        {/* Results Section */}
-        {isEligible !== null && (
-          <div className="eligibility-result">
-            <h3 className={isEligible ? 'eligible' : 'not-eligible'}>
-              {isEligible ? '🎉 Eligible for Purchase' : '⚠️ Not Eligible'}
-            </h3>
-            <div className="action-buttons">
-              <button className="buy-btn">Buy Now</button>
-              <button className="consult-btn">Talk to Expert</button>
-            </div>
+        {/* Eligibility Check - Now only triggers navigation */}
+        {!showQuestions && isEligible === null && (
+          <div className="eligibility-container">
+            <button className="eligibility-btn" onClick={handleEligibilityCheck}>
+              Check Eligibility
+            </button>
           </div>
         )}
+
+        {/* Removed results section since we're navigating immediately */}
       </div>
     </div>
   );
