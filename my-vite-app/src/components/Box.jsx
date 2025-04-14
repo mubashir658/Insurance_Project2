@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext.jsx";
+import { AuthContext } from "../context/AuthContext.jsx"; // Make sure the path is correct
+
 import "./Box.css";
 
 const Box = ({ title, description, icon }) => {
@@ -19,7 +20,7 @@ const Box = ({ title, description, icon }) => {
   };
 
   return (
-    <div 
+    <div
       className="box"
       onClick={handleClick}
       onKeyDown={handleKeyDown}

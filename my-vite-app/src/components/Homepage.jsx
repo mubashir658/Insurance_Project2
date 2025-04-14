@@ -1,16 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom"; // Added for navigation
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import Tagline from "./Tagline.jsx";
 import Box from "./Box.jsx";
 import "./Homepage.css";
 
 function Homepage() {
+  const { isLoggedIn, user } = useContext(AuthContext); // updated to include user
+
   const insuranceTypes = [
     {
       title: "Life Insurance Policy",
       description: "Secure your family's future with comprehensive life coverage",
       icon: "🛡️",
-      path: "/login", // Changed to /login
+      path: "/login",
     },
     {
       title: "Vehicle Insurance Policy",
@@ -37,9 +40,18 @@ function Homepage() {
       <header className="homepage-hero">
         <h1>Welcome to Your Insurance Hub</h1>
         <p>Explore coverage options tailored for you.</p>
-        <Link to="/login" className="hero-btn">
-          Get Started
-        </Link>
+        {!isLoggedIn ? (
+          <Link to="/login" className="hero-btn">
+            Get Started
+          </Link>
+        ) : (
+          <Link
+            to={user?.employeeId ? "/agent-dashboard" : "/user-dashboard"}
+            className="hero-btn"
+          >
+            Go to Dashboard
+          </Link>
+        )}
       </header>
 
       <main className="homepage-main">
@@ -70,7 +82,6 @@ function Homepage() {
         <nav className="footer-nav">
           <Link to="/about">About Us</Link>
           <Link to="/helpline">Helpline</Link>
-          <Link to="/login">Login</Link>
         </nav>
       </footer>
     </div>

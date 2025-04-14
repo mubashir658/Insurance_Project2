@@ -5,7 +5,7 @@ import Homepage from "./components/Homepage.jsx";
 import Login from "./components/Login.jsx";
 import About from "./components/About.jsx";
 import HelpLine from "./components/HelpLine.jsx";
-import CustomerDashboard from "./components/CustomerDashboard.jsx";
+import UserDashboard from "./components/UserDashboard.jsx";  // Updated to UserDashboard
 import AgentDashboard from "./components/AgentDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -14,18 +14,21 @@ function App() {
     <>
       <Nav />
       <Routes>
-        <Route path="/Homepage" element={<Homepage />} />
+        <Route path="/" element={<Homepage />} /> {/* Updated path to root "/" */}
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/helpline" element={<HelpLine />} />
+        
+        {/* Updated the route for users to be directed to UserDashboard */}
         <Route
-          path="/dashboard"
+          path="/user-dashboard"
           element={
             <ProtectedRoute>
-              <CustomerDashboard />
+              <UserDashboard /> {/* Render UserDashboard instead of CustomerDashboard */}
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/agent-dashboard"
           element={
@@ -34,6 +37,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </>

@@ -68,14 +68,17 @@ const Login = () => {
           setUser(response.data.user);
           setIsLoggedIn(true);
           localStorage.setItem("token", response.data.token);
-          // Navigate based on employeeId
+          
+          // Navigate based on employeeId (isAgent or not)
           const isAgentUser = !!response.data.user.employeeId;
           console.log("Login navigation:", {
             isAgentUser,
             employeeId: response.data.user.employeeId,
             user: response.data.user.email,
           });
-          navigate(isAgentUser ? "/agent-dashboard" : "/dashboard", { replace: true });
+
+          // Updated redirection: based on isAgent status
+          navigate(isAgentUser ? "/agent-dashboard" : "/user-dashboard", { replace: true });
         }
       } else {
         const errorMessages = {

@@ -12,13 +12,13 @@ const UserDashboard = () => {
       id: 1,
       title: "Health Insurance",
       description: "Comprehensive medical coverage",
-      premium: "$200/month"
+      premium: "800/month"
     },
     {
       id: 2,
       title: "Term Life Insurance",
       description: "Family financial protection",
-      premium: "$50/month"
+      premium: "650/month"
     }
   ]
 
