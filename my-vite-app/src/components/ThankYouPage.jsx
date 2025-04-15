@@ -1,11 +1,23 @@
 import React from "react";
 import "./ThankYouPage.css";
+import thankYouImage from "../assets/thankyou image.png";
 
 const ThankYouPage = () => {
   return (
     <div className="thank-you-container">
       <div className="thank-you-card">
-        <div className="animation-container">
+        <div className="image-section">
+          <img 
+            src={thankYouImage} 
+            alt="Thank you" 
+            className="fullscreen-image" 
+          />
+          <p className="visiting-message">
+            Thank you for visiting. We will soon contact you.
+          </p>
+        </div>
+
+        <div className="content-section">
           <div className="success-animation">
             <svg
               className="checkmark"
@@ -26,13 +38,12 @@ const ThankYouPage = () => {
               />
             </svg>
           </div>
-        </div>
-        
-        <div className="thank-you-content">
-          <h1 className="thank-you-title">Thank You!</h1>
+          
+          <h1 className="thank-you-title">Submission Successful!</h1>
           <p className="thank-you-text">
             We've received your information and our team will contact you shortly.
           </p>
+          
           <div className="contact-info">
             <div className="info-item">
               <i className="fas fa-phone-alt icon"></i>
@@ -43,9 +54,12 @@ const ThankYouPage = () => {
               <span>support@healthplans.com</span>
             </div>
           </div>
+          
           <div className="decorative-line"></div>
+          
           <p className="assurance-text">
-            Our executive will reach out to you within 24 hours
+            <i className="fas fa-clock"></i>
+            Our executive will reach out within 24 hours
           </p>
         </div>
       </div>

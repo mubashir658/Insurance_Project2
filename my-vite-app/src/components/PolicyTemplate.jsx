@@ -18,7 +18,17 @@ const PolicyTemplate = ({ policyData }) => {
   };
 
   const handleEligibilityCheck = () => {
-    navigate('/full-detail-question'); // Changed to direct navigation
+    // Create a simplified version of the policy data to pass
+    const selectedPolicyData = {
+      name: policyData.name,
+      insurer: policyData.insurer,
+      cover: policyData.cover,
+      selectedDuration,
+      selectedRiders,
+      totalPremium: calculateTotal()
+    };
+    
+    navigate('/full-detail', { state: { selectedPolicyData } });
   };
 
   return (

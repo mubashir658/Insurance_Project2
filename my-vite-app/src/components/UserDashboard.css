@@ -29,6 +29,8 @@ h1 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 
 .policy-card:hover {
@@ -41,6 +43,11 @@ h1 {
   background-color: #e0f2fe;
 }
 
+.policy-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
 .policy-card h3 {
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
@@ -50,6 +57,27 @@ h1 {
 .policy-card p {
   margin-bottom: 0.75rem;
   color: #4b5563;
+  flex-grow: 1;
+}
+
+.explore-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.explore-btn:hover {
+  background-color: #2563eb;
 }
 
 .premium {

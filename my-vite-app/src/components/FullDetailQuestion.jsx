@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./FullDetailQuestion.css";
 
-const FullDetailQuestion = ({ onContinue }) => {
+const FullDetailQuestion = ({ onContinue, isSubmitting }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     gender: "",
     member: "",
@@ -31,8 +33,14 @@ const FullDetailQuestion = ({ onContinue }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onContinue) {
-      onContinue(formData); // Call the onContinue function passed from the parent component
+    if (!isSubmitting) {
+      // Navigate directly to thank you page with form data
+      navigate("/thankyou", {
+        state: {
+          formData,
+          message: "Thank you for submitting your details. We'll get back to you soon!"
+        }
+      });
     }
   };
 
@@ -52,12 +60,12 @@ const FullDetailQuestion = ({ onContinue }) => {
             <label className="section-label">Gender</label>
             <div className="radio-group">
               <label className={`radio-option ${formData.gender === "Male" ? "selected" : ""}`}>
-                <input type="radio" name="gender" value="Male" onChange={handleChange} />
+                <input type="radio" name="gender" value="Male" onChange={handleChange} disabled={isSubmitting} />
                 <span className="radio-design"></span>
                 <span className="radio-label">Male</span>
               </label>
               <label className={`radio-option ${formData.gender === "Female" ? "selected" : ""}`}>
-                <input type="radio" name="gender" value="Female" onChange={handleChange} />
+                <input type="radio" name="gender" value="Female" onChange={handleChange} disabled={isSubmitting} />
                 <span className="radio-design"></span>
                 <span className="radio-label">Female</span>
               </label>
@@ -67,7 +75,7 @@ const FullDetailQuestion = ({ onContinue }) => {
           <div className="section">
             <label className="section-label">Select member to insure</label>
             <div className="select-wrapper">
-              <select name="member" onChange={handleChange} required>
+              <select name="member" onChange={handleChange} required disabled={isSubmitting}>
                 <option value="">-- Select Member --</option>
                 <option value="Self">Self</option>
                 <option value="Wife">Wife</option>
@@ -83,7 +91,7 @@ const FullDetailQuestion = ({ onContinue }) => {
           <div className="section">
             <label className="section-label">Age</label>
             <div className="input-wrapper">
-              <input type="number" name="age" min="0" onChange={handleChange} required />
+              <input type="number" name="age" min="0" onChange={handleChange} required disabled={isSubmitting} />
               <span className="input-suffix">years</span>
             </div>
           </div>
@@ -91,7 +99,7 @@ const FullDetailQuestion = ({ onContinue }) => {
           <div className="section">
             <label className="section-label">City</label>
             <div className="select-wrapper">
-              <select name="city" onChange={handleChange} required>
+              <select name="city" onChange={handleChange} required disabled={isSubmitting}>
                 <option value="">Select City</option>
                 <option>Delhi</option>
                 <option>Bengaluru</option>
@@ -106,14 +114,14 @@ const FullDetailQuestion = ({ onContinue }) => {
           <div className="section">
             <label className="section-label">Full Name</label>
             <div className="input-wrapper">
-              <input type="text" name="name" onChange={handleChange} required />
+              <input type="text" name="name" onChange={handleChange} required disabled={isSubmitting} />
             </div>
           </div>
 
           <div className="section">
             <label className="section-label">Mobile Number</label>
             <div className="input-wrapper">
-              <input type="tel" name="mobile" pattern="[0-9]{10}" onChange={handleChange} required />
+              <input type="tel" name="mobile" pattern="[0-9]{10}" onChange={handleChange} required disabled={isSubmitting} />
             </div>
           </div>
 
@@ -142,6 +150,7 @@ const FullDetailQuestion = ({ onContinue }) => {
                     value={item}
                     onChange={handleChange}
                     checked={formData.medicalHistory.includes(item)}
+                    disabled={isSubmitting}
                   />
                   <span className="checkbox-design"></span>
                   <span className="checkbox-label">{item}</span>
@@ -157,6 +166,7 @@ const FullDetailQuestion = ({ onContinue }) => {
                 name="whatsappUpdates"
                 onChange={handleChange}
                 checked={formData.whatsappUpdates}
+                disabled={isSubmitting}
               />
               <span className="checkbox-design"></span>
               <span className="checkbox-label">Get Updates on WhatsApp</span>
@@ -164,9 +174,15 @@ const FullDetailQuestion = ({ onContinue }) => {
             </label>
           </div>
 
-          <button type="submit" className="submit-button">
-            Continue
-            <span className="button-icon">→</span>
+          <button type="submit" className="submit-button" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <span className="spinner"></span>
+            ) : (
+              <>
+                Continue
+                <span className="button-icon">→</span>
+              </>
+            )}
           </button>
         </div>
       </form>

@@ -1,37 +1,46 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Tagline from "./Tagline.jsx";
 import Box from "./Box.jsx";
 import "./Homepage.css";
 
 function Homepage() {
-  const { isLoggedIn, user } = useContext(AuthContext); // updated to include user
+  const { isLoggedIn, user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handlePolicyClick = (path, policy) => {
+    if (isLoggedIn) {
+      navigate(path, { state: { selectedPolicy: policy } });
+    } else {
+      navigate('/login');
+    }
+  };
 
   const insuranceTypes = [
     {
       title: "Life Insurance Policy",
       description: "Secure your family's future with comprehensive life coverage",
       icon: "🛡️",
-      path: "/login",
+      path: "/basic-questions",
     },
     {
       title: "Vehicle Insurance Policy",
       description: "Protect your vehicle with customizable coverage options",
       icon: "🚗",
-      path: "/login",
+      path: "/basic-questions",
     },
     {
       title: "Health Insurance Policy",
       description: "Get the best healthcare coverage for you and your family",
       icon: "🏥",
-      path: "/login",
+      path: "/basic-questions",
     },
     {
       title: "Home Insurance Policy",
       description: "Safeguard your home against unexpected damages",
       icon: "🏠",
-      path: "/login",
+      path: "/basic-questions",
     },
   ];
 
@@ -62,13 +71,13 @@ function Homepage() {
           <p className="section-subtitle">Select the type of insurance you need</p>
 
           <div className="box-grid">
-            {insuranceTypes.map((insurance) => (
+            {insuranceTypes.map((type, index) => (
               <Box
-                key={insurance.title}
-                title={insurance.title}
-                description={insurance.description}
-                icon={insurance.icon}
-                path={insurance.path}
+                key={index}
+                title={type.title}
+                description={type.description}
+                icon={type.icon}
+                onClick={() => handlePolicyClick(type.path, type)}
               />
             ))}
           </div>

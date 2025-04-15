@@ -1,5 +1,6 @@
 import express from "express";
-import User from "../models/User.js";
+import Customer from "../models/User.js";
+import Agent from "../models/Agent.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -7,41 +8,51 @@ const router = express.Router();
 
 // **Signup Route**
 router.post("/signup", async (req, res) => {
-  const { name, email, password, employeeId } = req.body;
+  const { name, email, password, employeeId, role } = req.body;
 
   try {
-    console.log("Signup attempt:", { email, employeeId });
+    console.log("Signup attempt:", { email, employeeId, role });
 
     // Validate input
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       return res.status(400).json({
         success: false,
-        message: "Name, email, and password are required",
-      });
-    }
-    if (employeeId && employeeId.trim() === "") {
-      return res.status(400).json({
-        success: false,
-        message: "Employee ID cannot be empty if provided",
+        message: "All fields are required",
       });
     }
 
-    // Check for existing user
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    // Check if user already exists in either collection
+    const existingCustomer = await Customer.findOne({ email });
+    const existingAgent = await Agent.findOne({ email });
+    if (existingCustomer || existingAgent) {
       return res.status(400).json({
         success: false,
         message: "Email already exists",
       });
     }
 
-    // Create user
+    // Create user based on role
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword, employeeId });
+    let newUser;
+
+    if (role === 'agent') {
+      if (!employeeId) {
+        return res.status(400).json({
+          success: false,
+          message: "Employee ID is required for agents",
+        });
+      }
+      newUser = new Agent({ name, email, password: hashedPassword, employeeId });
+    } else {
+      newUser = new Customer({ fullName: name, email, password: hashedPassword });
+
+    }
+
     await newUser.save();
     console.log("User created:", {
       email,
       employeeId,
+      role,
       userId: newUser._id,
     });
 
@@ -66,21 +77,27 @@ router.post("/signup", async (req, res) => {
 
 // **Login Route**
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   try {
-    console.log("Login attempt:", { email });
+    console.log("Login attempt:", { email, role });
 
     // Validate input
-    if (!email || !password) {
+    if (!email || !password || !role) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required",
+        message: "Email, password, and role are required",
       });
     }
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Find user in appropriate collection
+    let user;
+    if (role === 'agent') {
+      user = await Agent.findOne({ email });
+    } else {
+      user = await Customer.findOne({ email });
+    }
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -97,36 +114,30 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Check JWT_SECRET
-    if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET is not defined");
-      return res.status(500).json({
-        success: false,
-        message: "Server configuration error",
-      });
-    }
-
     // Generate token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id, role }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+
     const userData = {
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       employeeId: user.employeeId || null,
     };
+
     console.log("Login successful:", {
       email,
-      employeeId: userData.employeeId,
+      role,
       userId: user._id,
     });
 
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token,
-      user: userData,
+      data: userData,
+      token
     });
   } catch (error) {
     console.error("Login error:", {
@@ -152,16 +163,14 @@ router.get("/verify", async (req, res) => {
       });
     }
 
-    if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET is not defined");
-      return res.status(500).json({
-        success: false,
-        message: "Server configuration error",
-      });
-    }
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId).select("-password");
+    let user;
+
+    if (decoded.role === 'agent') {
+      user = await Agent.findById(decoded.userId).select("-password");
+    } else {
+      user = await Customer.findById(decoded.userId).select("-password");
+    }
 
     if (!user) {
       return res.status(401).json({
@@ -178,6 +187,7 @@ router.get("/verify", async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
         employeeId: user.employeeId || null,
       },
     });

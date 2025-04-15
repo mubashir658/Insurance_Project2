@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
+  const navigate = useNavigate();
 
   const handleItemClick = (item) => {
     setActiveItem(item);
+    if (item === 'Profile') {
+      navigate('/profile');
+    }
   };
 
   return (

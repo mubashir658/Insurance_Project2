@@ -1,5 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // ✅ added
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./HealthPoliciesPage.css";
 
 const healthPolicies = [
@@ -27,10 +28,15 @@ const healthPolicies = [
 ];
 
 const HealthPoliciesPage = () => {
-  const navigate = useNavigate(); // ✅ added
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   const handleViewDetails = (id) => {
-    navigate(`/hpolicy${id}`); // ✅ navigate to respective page
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+    navigate(`/hpolicy${id}`);
   };
 
   return (
@@ -49,7 +55,7 @@ const HealthPoliciesPage = () => {
             </ul>
             <button
               className="select-btn"
-              onClick={() => handleViewDetails(policy.id)} // ✅ updated
+              onClick={() => handleViewDetails(policy.id)}
             >
               View Details
             </button>

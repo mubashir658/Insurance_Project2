@@ -12,52 +12,44 @@ const UserDashboard = () => {
       id: 1,
       title: "Life Insurance Policy",
       description: "Secure your family's future with comprehensive life coverage",
-    
       icon: "🛡️"
     },
     {
       id: 2,
       title: "Vehicle Insurance Policy",
       description: "Protect your vehicle with customizable coverage options",
-      
       icon: "🚗"
     },
     {
       id: 3,
       title: "Health Insurance Policy",
       description: "Get the best healthcare coverage for you and your family",
-      
       icon: "🏥"
     },
     {
       id: 4,
       title: "Home Insurance Policy",
       description: "Safeguard your home against unexpected damages",
-     
       icon: "🏠"
     },
     {
       id: 5,
       title: "Government Insurance Policies",
       description: "Explore state-sponsored insurance schemes and benefits",
-     
       icon: "🏛️"
     }
   ]
 
-  const togglePolicy = (id) => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
-    if (!isLoggedIn) {
-      navigate('/login')
-    } else {
-      const selectedPolicy = policies.find(p => p.id === id)
-      const newSelection = new Set(selectedPolicies)
-      newSelection.has(id) ? newSelection.delete(id) : newSelection.add(id)
-      setSelectedPolicies(newSelection)
+  const handlePolicyClick = (id) => {
+    const selectedPolicy = policies.find(p => p.id === id)
+    setSelectedPolicies(new Set([id]))
 
-      if (selectedPolicy.title.includes("Health Insurance")) {
-        navigate('/basic-questions', { state: { selectedPolicy } })
-      }
+    if (selectedPolicy.title.includes("Health Insurance")) {
+      navigate('/basic-questions', { state: { selectedPolicy } })
+    } else if (selectedPolicy.title.includes("Government Insurance")) {
+      navigate('/government-policies')
+    } else {
+      navigate('/basic-questions', { state: { selectedPolicy } })
     }
   }
 
@@ -71,12 +63,16 @@ const UserDashboard = () => {
             <div 
               key={policy.id}
               className={`policy-card ${selectedPolicies.has(policy.id) ? 'selected' : ''}`}
-              onClick={() => togglePolicy(policy.id)}
+              onClick={() => handlePolicyClick(policy.id)}
             >
               <div className="policy-icon">{policy.icon}</div>
               <h3>{policy.title}</h3>
               <p>{policy.description}</p>
-              <div className="premium">{policy.premium}</div>
+              {policy.title.includes("Government Insurance") && (
+                <button className="explore-btn">
+                  Explore Government Schemes →
+                </button>
+              )}
             </div>
           ))}
         </div>

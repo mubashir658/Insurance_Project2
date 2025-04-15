@@ -4,9 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./Login.css";
 
-
 const Login = () => {
-  const { setUser, setIsLoggedIn } = useAuth();
+  const { login } = useAuth();
   const [isAgent, setIsAgent] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,8 +49,16 @@ const Login = () => {
 
     const endpoint = isSignup ? "/auth/signup" : "/auth/login";
     const payload = isSignup
-      ? formData
-      : { email: formData.email, password: formData.password };
+      ? {
+          ...formData,
+          role: isAgent ? "agent" : "customer",
+          fullName: formData.name
+        }
+      : { 
+          email: formData.email, 
+          password: formData.password,
+          role: isAgent ? "agent" : "customer"
+        };
 
     try {
       const response = await axios.post(`http://localhost:5000${endpoint}`, payload);
@@ -63,23 +70,19 @@ const Login = () => {
           setFormData({ name: "", email: "", employeeId: "", password: "", confirmPassword: "" });
           setSuccess("Account created successfully! Please log in.");
         } else {
-          if (!response.data.user || !response.data.token) {
+          if (!response.data.data) {
             throw new Error("Invalid login response");
           }
-          setUser(response.data.user);
-          setIsLoggedIn(true);
-          localStorage.setItem("token", response.data.token);
           
-          // Navigate based on employeeId (isAgent or not)
-          const isAgentUser = !!response.data.user.employeeId;
-          console.log("Login navigation:", {
-            isAgentUser,
-            employeeId: response.data.user.employeeId,
-            user: response.data.user.email,
-          });
-
-          // Updated redirection: based on isAgent status
-          navigate(isAgentUser ? "/agent-dashboard" : "/user-dashboard", { replace: true });
+          // Use the login function from auth context
+          const loginResult = await login(response.data.data);
+          
+          if (loginResult.success) {
+            // Navigate based on role
+            navigate(response.data.data.role === 'agent' ? "/agent-dashboard" : "/user-dashboard", { replace: true });
+          } else {
+            throw new Error(loginResult.error || "Login failed");
+          }
         }
       } else {
         const errorMessages = {
@@ -93,11 +96,7 @@ const Login = () => {
         setError(errorMessages[response.data.message] || response.data.message || "An error occurred.");
       }
     } catch (err) {
-      console.error("Login error:", {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-      });
+      console.error("Login error:", err);
       const errorMessages = {
         "User not found": "No account found with this email.",
         "Invalid credentials": "Incorrect email or password.",
