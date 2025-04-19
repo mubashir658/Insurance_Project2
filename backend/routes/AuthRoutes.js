@@ -175,55 +175,72 @@ const logUserActivity = async ({ email, role, type, status }) => {
     res.status(500).json({ success: false, message: "Error during login" });
   }
 });*/
+
+// Login Route
 router.post("/login", async (req, res) => {
   const { email, password, role } = req.body;
 
+  console.log("Received login request:", { email, role });
+
   try {
-    let user;
-    if (role === "agent") {
-      user = await Agent.findOne({ email });
-    } else {
-      user = await Customer.findOne({ email });
+    // Validate required fields
+    if (!email || !password || !role) {
+      console.log("Validation failed: Missing required fields");
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
+
+    // Find user based on role
+    const user =
+      role === "agent"
+        ? await Agent.findOne({ email })
+        : await Customer.findOne({ email });
 
     if (!user) {
+      console.log("User not found:", email);
       await logUserActivity({ email, role, type: "login", status: "failure" });
       return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
+    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log("Password mismatch:", email);
       await logUserActivity({ email, role, type: "login", status: "failure" });
       return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id, role }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
     // Log successful login activity
     await logUserActivity({ email, role, type: "login", status: "success" });
 
+    // Return token and user details
     res.status(200).json({
       success: true,
       message: "Login successful",
+      token,
       data: {
-        _id: user._id,
         name: user.name,
         email: user.email,
-        role,
+        role: user.role,
       },
-      token,
     });
   } catch (error) {
     console.error("Login error:", error.message);
 
-    // Log failed login activity in case of server errors
+    // Log failed login activity
     await logUserActivity({ email, role, type: "login", status: "failure" });
 
+    // Return consistent error response
     res.status(500).json({ success: false, message: "Error during login" });
   }
 });
+
 
 /*router.post("/signup", async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -295,7 +312,7 @@ router.post("/login", async (req, res) => {
   }
 });
 */
-router.post("/signup", async (req, res) => {
+/*router.post("/signup", async (req, res) => {
   const { name, email, password, role } = req.body;
 
   console.log("Received signup request:", { name, email, role });
@@ -366,6 +383,105 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ success: false, message: "Error during signup" });
   }
 });
+*/
+
+
+// Signup Route
+router.post("/signup", async (req, res) => {
+  const { name, email, password, role, employeeId } = req.body;
+
+  console.log("Received signup request:", { name, email, role });
+
+  try {
+    // Validate required fields
+    if (!name || !email || !password || !role) {
+      console.log("Validation failed: Missing required fields");
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    // Check if user already exists
+    const existingUser =
+      role === "agent"
+        ? await Agent.findOne({ email })
+        : await Customer.findOne({ email });
+
+    if (existingUser) {
+      console.log("User already exists:", email);
+      await logUserActivity({ email, role, type: "signup", status: "failure" });
+      return res.status(400).json({ success: false, message: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user based on role
+    let newUser;
+    if (role === "agent") {
+      if (!employeeId) {
+        return res.status(400).json({ success: false, message: "Employee ID is required for agents" });
+      }
+
+      newUser = new Agent({
+        name,
+        email,
+        password: hashedPassword,
+        employeeId,
+        role,
+      });
+    } else {
+      newUser = new Customer({
+        name,
+        email,
+        password: hashedPassword,
+        role,
+      });
+    }
+
+    await newUser.save();
+    console.log(`New ${role} created:`, newUser);
+
+    // Log successful signup activity
+    await logUserActivity({ email, role, type: "signup", status: "success" });
+
+    // Send email notification to manager ONLY for customer signups
+    if (role === "customer") {
+      const managerEmail = process.env.MANAGER_EMAIL; // Manager's email
+      const emailSubject = "New Customer Signup";
+      const emailText = `A new customer has signed up:\nName: ${name}\nEmail: ${email}`;
+
+      console.log("Sending email to manager:", managerEmail); // Log the recipient
+
+      try {
+        await sendEmail(managerEmail, emailSubject, emailText);
+        console.log("Notification email sent to manager");
+      } catch (emailError) {
+        console.error("Failed to send email notification:", emailError.message);
+      }
+    }
+
+    // Return consistent response
+    res.status(201).json({
+      success: true,
+      message: "Signup successful",
+      data: {
+        name,
+        email,
+        role,
+      },
+    });
+  } catch (error) {
+    console.error("Signup error:", error.message);
+
+    // Log failed signup activity
+    await logUserActivity({ email, role, type: "signup", status: "failure" });
+
+    // Return consistent error response
+    res.status(500).json({ success: false, message: "Error during signup" });
+  }
+});
+
+
+
 // ✅ TOKEN VERIFY
 router.get("/verify", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
