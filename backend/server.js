@@ -1,4 +1,4 @@
-import express from "express";
+/*import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -273,4 +273,116 @@ app.listen(PORT, () => {
 app.use((err, req, res, next) => {
   console.error("Server error:", err.message);
   res.status(500).json({ success: false, message: err.message || "Internal server error" });
+});
+*/
+// server.js
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import authRoutes from "./routes/AuthRoutes.js"; // ✅ Import auth routes
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+
+// Enable CORS for frontend origin
+app.use(cors({
+  origin: "http://localhost:5173", // Allow requests from the frontend origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
+  credentials: true, // Allow sending cookies (if needed)
+}));
+
+// Parse JSON bodies
+app.use(express.json());
+
+// Connect to MongoDB
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB Connected");
+
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(c => c.name);
+
+    if (!collectionNames.includes('customers')) await db.createCollection('customers');
+    if (!collectionNames.includes('basicquestions')) await db.createCollection('basicquestions');
+
+    console.log("Available collections:", collectionNames);
+  } catch (error) {
+    console.error("MongoDB connection error:", error.message);
+    process.exit(1); // Exit process on connection failure
+  }
+};
+
+connectDB();
+
+// Models (Customer, BasicQuestion)
+import Customer from "./models/Customer.js";
+import BasicQuestion from "./models/BasicQuestion.js";
+
+// Auth Routes
+app.use("/auth", authRoutes); // ✅ Mount auth routes here
+
+// Basic Questions Submit Route
+app.post('/api/basic-questions/submit', async (req, res) => {
+  try {
+    const { name, email, gender, area, qualification, income, vintage, claimAmount, numberOfPolicies, policiesChosen, maritalStatus } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !gender || !area || !qualification || !income || !vintage || !claimAmount || !numberOfPolicies || !policiesChosen || !maritalStatus) {
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required',
+      });
+    }
+
+    const question = new BasicQuestion({
+      name,
+      email,
+      gender,
+      area,
+      qualification,
+      income,
+      vintage,
+      claimAmount,
+      numberOfPolicies,
+      policiesChosen,
+      policyType: policiesChosen === "A" ? "health" :
+                 policiesChosen === "B" ? "vehicle" :
+                 policiesChosen === "C" ? "life" : "other",
+      maritalStatus,
+    });
+
+    await question.save();
+    res.status(201).json({ success: true, data: question });
+  } catch (error) {
+    console.error("Error saving form data:", error);
+    res.status(400).json({ success: false, message: error.message || "Failed to save form data" });
+  }
+});
+
+// Get all basic questions
+app.get('/api/basic-questions', async (req, res) => {
+  try {
+    const questions = await BasicQuestion.find().sort({ createdAt: -1 });
+    res.json(questions);
+  } catch (error) {
+    console.error("Error fetching basic questions:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to fetch basic questions" });
+  }
+});
+
+// Error Handler Middleware
+app.use((err, req, res, next) => {
+  console.error("Server error:", err.message);
+  res.status(500).json({ success: false, message: err.message || "Internal server error" });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

@@ -1,4 +1,4 @@
-import express from 'express';
+/*import express from 'express';
 import BasicQuestion from '../models/BasicQuestion.js';
 
 const router = express.Router();
@@ -65,4 +65,56 @@ router.post('/submit', async (req, res) => {
   }
 });
 
-export default router; 
+export default router; */
+
+const express = require('express');
+const BasicQuestion = require('../models/BasicQuestion');
+
+const router = express.Router();
+
+// POST /api/basic-questions/submit
+router.post('/submit', async (req, res) => {
+  try {
+    const { name, email, gender, area, qualification, income, vintage, claimAmount, numberOfPolicies, policiesChosen, maritalStatus } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !gender || !area || !qualification || !income || !vintage || !claimAmount || !numberOfPolicies || !policiesChosen || !maritalStatus) {
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required',
+      });
+    }
+
+    const basicQuestion = new BasicQuestion({
+      name,
+      email,
+      gender,
+      area,
+      qualification,
+      income,
+      vintage,
+      claimAmount,
+      numberOfPolicies,
+      policiesChosen,
+      policyType: policiesChosen === "A" ? "health" :
+                 policiesChosen === "B" ? "vehicle" :
+                 policiesChosen === "C" ? "life" : "other",
+      maritalStatus,
+    });
+
+    await basicQuestion.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Form data saved successfully',
+    });
+  } catch (error) {
+    console.error("Error saving basic questions:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to save form data',
+    });
+  }
+});
+
+module.exports = router;

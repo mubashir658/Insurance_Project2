@@ -1,19 +1,28 @@
 import express from "express";
-import Customer from "../models/User.js";
+import Customer from "../models/Customer.js";
 import Agent from "../models/Agent.js";
+import UserActivity from "../models/UserActivity.js"; // ✅ Correct path
+import sendEmail from "../utils/sendEmail.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
-// **Signup Route**
-router.post("/signup", async (req, res) => {
+// ✅ Activity Logger
+const logUserActivity = async ({ email, role, type, status }) => {
+  try {
+    await UserActivity.create({ email, role, type, status });
+  } catch (err) {
+    console.error("Failed to log activity:", err.message);
+  }
+};
+
+
+// ✅ SIGNUP
+/*router.post("/signup", async (req, res) => {
   const { name, email, password, employeeId, role } = req.body;
 
   try {
-    console.log("Signup attempt:", { email, employeeId, role });
-
-    // Validate input
     if (!name || !email || !password || !role) {
       return res.status(400).json({
         success: false,
@@ -21,21 +30,21 @@ router.post("/signup", async (req, res) => {
       });
     }
 
-    // Check if user already exists in either collection
     const existingCustomer = await Customer.findOne({ email });
     const existingAgent = await Agent.findOne({ email });
+
     if (existingCustomer || existingAgent) {
+      await logUserActivity({ email, role, type: "signup", status: "failure" });
       return res.status(400).json({
         success: false,
         message: "Email already exists",
       });
     }
 
-    // Create user based on role
     const hashedPassword = await bcrypt.hash(password, 10);
     let newUser;
 
-    if (role === 'agent') {
+    if (role === "agent") {
       if (!employeeId) {
         return res.status(400).json({
           success: false,
@@ -44,144 +53,342 @@ router.post("/signup", async (req, res) => {
       }
       newUser = new Agent({ name, email, password: hashedPassword, employeeId });
     } else {
-      newUser = new Customer({ fullName: name, email, password: hashedPassword });
-
+      newUser = new Customer({ name, email, password: hashedPassword });
     }
 
     await newUser.save();
-    console.log("User created:", {
-      email,
-      employeeId,
-      role,
-      userId: newUser._id,
-    });
 
-    return res.status(201).json({
+    await logUserActivity({ email, role, type: "signup", status: "success" });
+
+    // Return user details in the response
+    res.status(201).json({
       success: true,
       message: "User created successfully",
       userId: newUser._id,
+      user: {
+        name: newUser.name,
+        email: newUser.email,
+        role: role,
+        employeeId: newUser.employeeId || null,
+      },
     });
   } catch (error) {
-    console.error("Signup error:", {
-      message: error.message,
-      stack: error.stack,
+    console.error("Signup error:", error.message);
+    res.status(500).json({ success: false, message: "Error creating user" });
+  }
+});*/
+
+// Signup Route
+/*router.post("/signup", async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  try {
+    // Check if user already exists
+    const existingCustomer = await Customer.findOne({ email });
+    if (existingCustomer) {
+      await logUserActivity({ email, role, type: "signup", status: "failure" });
+      return res.status(400).json({ success: false, message: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new customer
+    const newCustomer = new Customer({
+      name,
+      email,
+      password: hashedPassword,
+      role,
     });
-    return res.status(500).json({
-      success: false,
-      message: error.message.includes("validation")
-        ? "Invalid user data"
-        : "Error creating user",
+
+    await newCustomer.save();
+
+    // Log successful signup activity
+    await logUserActivity({ email, role, type: "signup", status: "success" });
+
+    // Notify the agent via email
+    const agentEmail = "dinnuu576@gmail.com"; // Replace with the agent's email
+    const emailSubject = "New Customer Signup";
+    const emailText = `A new customer has signed up:\nName: ${name}\nEmail: ${email}`;
+
+    await sendEmail(agentEmail, emailSubject, emailText);
+
+    res.status(201).json({
+      success: true,
+      message: "Signup successful",
+      data: {
+        name,
+        email,
+        role,
+      },
     });
+  } catch (error) {
+    console.error("Signup error:", error.message);
+
+    // Log failed signup activity
+    await logUserActivity({ email, role, type: "signup", status: "failure" });
+
+    res.status(500).json({ success: false, message: "Error during signup" });
   }
 });
 
-// **Login Route**
-router.post("/login", async (req, res) => {
+
+
+// ✅ LOGIN
+/*router.post("/login", async (req, res) => {
   const { email, password, role } = req.body;
 
   try {
-    console.log("Login attempt:", { email, role });
-
-    // Validate input
-    if (!email || !password || !role) {
-      return res.status(400).json({
-        success: false,
-        message: "Email, password, and role are required",
-      });
-    }
-
-    // Find user in appropriate collection
     let user;
-    if (role === 'agent') {
+    if (role === "agent") {
       user = await Agent.findOne({ email });
     } else {
       user = await Customer.findOne({ email });
     }
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-      });
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
-    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
-    // Generate token
     const token = jwt.sign({ userId: user._id, role }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    const userData = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      employeeId: user.employeeId || null,
-    };
-
-    console.log("Login successful:", {
-      email,
-      role,
-      userId: user._id,
-    });
-
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Login successful",
-      data: userData,
-      token
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role,
+      },
+      token,
     });
   } catch (error) {
-    console.error("Login error:", {
-      message: error.message,
-      stack: error.stack,
+    console.error("Login error:", error.message);
+    res.status(500).json({ success: false, message: "Error during login" });
+  }
+});*/
+router.post("/login", async (req, res) => {
+  const { email, password, role } = req.body;
+
+  try {
+    let user;
+    if (role === "agent") {
+      user = await Agent.findOne({ email });
+    } else {
+      user = await Customer.findOne({ email });
+    }
+
+    if (!user) {
+      await logUserActivity({ email, role, type: "login", status: "failure" });
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      await logUserActivity({ email, role, type: "login", status: "failure" });
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user._id, role }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
     });
-    return res.status(500).json({
-      success: false,
-      message: "Error during login",
+
+    // Log successful login activity
+    await logUserActivity({ email, role, type: "login", status: "success" });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role,
+      },
+      token,
     });
+  } catch (error) {
+    console.error("Login error:", error.message);
+
+    // Log failed login activity in case of server errors
+    await logUserActivity({ email, role, type: "login", status: "failure" });
+
+    res.status(500).json({ success: false, message: "Error during login" });
   }
 });
 
-// **Verify Token Route**
+/*router.post("/signup", async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  console.log("Received signup request:", { name, email, role });
+
+  try {
+    // Validate required fields
+    if (!name || !email || !password || !role) {
+      console.log("Validation failed: Missing required fields");
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    // Check if user already exists
+    const existingCustomer = await Customer.findOne({ email });
+    if (existingCustomer) {
+      console.log("User already exists:", email);
+      await logUserActivity({ email, role, type: "signup", status: "failure" });
+      return res.status(400).json({ success: false, message: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new customer
+    const newCustomer = new Customer({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    await newCustomer.save();
+    console.log("New customer created:", newCustomer);
+
+    // Log successful signup activity
+    await logUserActivity({ email, role, type: "signup", status: "success" });
+
+    // Notify the agent via email
+    const agentEmail = process.env.AGENT_EMAIL; // Replace with the agent's email
+    const emailSubject = "New Customer Signup";
+    const emailText = `A new customer has signed up:\nName: ${name}\nEmail: ${email}`;
+
+    try {
+      await sendEmail(agentEmail, emailSubject, emailText);
+      console.log("Notification email sent to agent");
+    } catch (emailError) {
+      console.error("Failed to send email notification:", emailError);
+    }
+
+    // Return consistent response
+    res.status(201).json({
+      success: true,
+      message: "Signup successful",
+      data: {
+        name,
+        email,
+        role,
+      },
+    });
+  } catch (error) {
+    console.error("Signup error:", error.message);
+
+    // Log failed signup activity
+    await logUserActivity({ email, role, type: "signup", status: "failure" });
+
+    // Return consistent error response
+    res.status(500).json({ success: false, message: "Error during signup" });
+  }
+});
+*/
+router.post("/signup", async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  console.log("Received signup request:", { name, email, role });
+
+  try {
+    // Validate required fields
+    if (!name || !email || !password || !role) {
+      console.log("Validation failed: Missing required fields");
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    // Check if user already exists
+    const existingCustomer = await Customer.findOne({ email });
+    if (existingCustomer) {
+      console.log("User already exists:", email);
+      await logUserActivity({ email, role, type: "signup", status: "failure" });
+      return res.status(400).json({ success: false, message: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new customer
+    const newCustomer = new Customer({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    await newCustomer.save();
+    console.log("New customer created:", newCustomer);
+
+    // Log successful signup activity
+    await logUserActivity({ email, role, type: "signup", status: "success" });
+
+    // Notify the manager via email
+    const managerEmail = process.env.MANAGER_EMAIL; // Manager's email
+    const emailSubject = "New Customer Signup";
+    const emailText = `A new customer has signed up:\nName: ${name}\nEmail: ${email}`;
+
+    console.log("Sending email to manager:", managerEmail); // Log the recipient
+
+    try {
+      await sendEmail(managerEmail, emailSubject, emailText);
+      console.log("Notification email sent to manager");
+    } catch (emailError) {
+      console.error("Failed to send email notification:", emailError.message);
+    }
+
+    // Return consistent response
+    res.status(201).json({
+      success: true,
+      message: "Signup successful",
+      data: {
+        name,
+        email,
+        role,
+      },
+    });
+  } catch (error) {
+    console.error("Signup error:", error.message);
+
+    // Log failed signup activity
+    await logUserActivity({ email, role, type: "signup", status: "failure" });
+
+    // Return consistent error response
+    res.status(500).json({ success: false, message: "Error during signup" });
+  }
+});
+// ✅ TOKEN VERIFY
 router.get("/verify", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   try {
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "No token provided",
-      });
+      return res.status(401).json({ success: false, message: "No token provided" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     let user;
 
-    if (decoded.role === 'agent') {
+    if (decoded.role === "agent") {
       user = await Agent.findById(decoded.userId).select("-password");
     } else {
       user = await Customer.findById(decoded.userId).select("-password");
     }
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-      });
+      return res.status(401).json({ success: false, message: "User not found" });
     }
 
-    console.log("Token verified:", { userId: user._id, email: user.email });
-
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       user: {
         _id: user._id,
@@ -192,14 +399,8 @@ router.get("/verify", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Verify error:", {
-      message: error.message,
-      stack: error.stack,
-    });
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token",
-    });
+    console.error("Verify error:", error.message);
+    res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
 });
 
