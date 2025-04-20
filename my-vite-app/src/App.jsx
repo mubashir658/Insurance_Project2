@@ -17,6 +17,7 @@ import HPolicy2 from './components/HPolicy2';
 import HPolicy3 from './components/HPolicy3';
 import Profile from './components/Profile';
 import GovernmentPolicies from './components/GovernmentPolicies';
+import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -70,6 +71,7 @@ function App() {
         {/* 404 Route */}
         <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
+      <Chatbot />
     </>
   );
 }
