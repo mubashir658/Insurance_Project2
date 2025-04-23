@@ -1,12 +1,11 @@
-/*import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./BasicQuestions.css";
 
-export default function BasicQuestions() {
+const BasicQuestions = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name : "",
-    email: "",
     gender: "",
     area: "",
     qualification: "",
@@ -15,496 +14,164 @@ export default function BasicQuestions() {
     claimAmount: "",
     numberOfPolicies: "",
     policiesChosen: "",
-    policyType: "health",
-    maritalStatus: ""
+    maritalStatus: "",
   });
-
-  const [error, setError] = useState("");
-  const [validationErrors, setValidationErrors] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const selectedPolicy = location.state?.selectedPolicy;
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const fromHealthPolicy = new URLSearchParams(window.location.search).get("from") === "health-policy";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    setError("");
-    setValidationErrors([]);
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setValidationErrors([]);
-    setIsSubmitting(true);
+    setIsLoading(true);
+    setError(null);
 
-    const customer = JSON.parse(localStorage.getItem("customer")); // or use context if available
-
-    const updatedFormData = {
-      ...formData,
-      name: customer?.name,
-      email: customer?.email,
-      policyType: formData.policiesChosen === "A" ? "health" :
-                  formData.policiesChosen === "B" ? "vehicle" :
-                  formData.policiesChosen === "C" ? "life" : "other"
-    };
-
-
-    try {
-      const updatedFormData = {
-        ...formData,
-        policyType: formData.policiesChosen === "A" ? "health" : 
-                   formData.policiesChosen === "B" ? "vehicle" : 
-                   formData.policiesChosen === "C" ? "life" : "other"
-      };
-
-      console.log("Submitting form data:", updatedFormData);
-      const response = await axios.post('http://localhost:5000/api/basic-questions', updatedFormData);
-      console.log("Form submission response:", response.data);
-      
-      if (response.data.success) {
-        // Check if user came from health policy card
-        if (selectedPolicy?.title?.includes("Health Insurance")) {
-          navigate('/health-policies');
-        } else {
-          // For all other policies, go to thank you page
-          navigate('/thankyou', { 
-            state: { 
-              formData: updatedFormData,
-              message: "Thank you for your interest! We'll get back to you soon with personalized policy options."
-            } 
-          });
-        }
-      } else {
-        setError(response.data.message || "Failed to save form data");
-      }
-    } catch (error) {
-      console.error("Form submission error:", error);
-      setError(error.response?.data?.message || "Error submitting form. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="basic-questions">
-      <h1>Basic Information</h1>
-      <p className="subtitle">Please provide some basic information to help us find the best policy for you</p>
-      
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="gender">Gender</label>
-          <select
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-           
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="area">Area</label>
-          <select
-            id="area"
-            name="area"
-            value={formData.area}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Area</option>
-            <option value="urban">Urban</option>
-            <option value="rural">Rural</option>
-        
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="qualification">Qualification</label>
-          <select
-            id="qualification"
-            name="qualification"
-            value={formData.qualification}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Qualification</option>
-            <option value="high-school">High School</option>
-            <option value="bachelor">Bachelor's Degree</option>
-            <option value="master">Master's Degree</option>
-            <option value="phd">PhD</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="income">Annual Income (₹)</label>
-          <input
-            type="number"
-            id="income"
-            name="income"
-            value={formData.income}
-            onChange={handleChange}
-            required
-            min="0"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="vintage">Years of Experience</label>
-          <input
-            type="number"
-            id="vintage"
-            name="vintage"
-            value={formData.vintage}
-            onChange={handleChange}
-            required
-            min="0"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="claimAmount">Previous Claim Amount (₹)</label>
-          <input
-            type="number"
-            id="claimAmount"
-            name="claimAmount"
-            value={formData.claimAmount}
-            onChange={handleChange}
-            required
-            min="0"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="numberOfPolicies">Number of Existing Policies</label>
-          <input
-            type="number"
-            id="numberOfPolicies"
-            name="numberOfPolicies"
-            value={formData.numberOfPolicies}
-            onChange={handleChange}
-            required
-            min="0"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="policiesChosen">Type of Policy</label>
-          <select
-            id="policiesChosen"
-            name="policiesChosen"
-            value={formData.policiesChosen}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Policy Type</option>
-            <option value="A">Health Insurance</option>
-            <option value="B">Vehicle Insurance</option>
-            <option value="C">Life Insurance</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="maritalStatus">Marital Status</label>
-          <select
-            id="maritalStatus"
-            name="maritalStatus"
-            value={formData.maritalStatus}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Marital Status</option>
-            <option value="single">Single</option>
-            <option value="married">Married</option>
-           
-          </select>
-        </div>
-
-        {error && <div className="error-message">{error}</div>}
-        {validationErrors.length > 0 && (
-          <div className="validation-errors">
-            {validationErrors.map((err, index) => (
-              <p key={index} className="error-message">{err}</p>
-            ))}
-          </div>
-        )}
-
-        <button type="submit" className="submit-btn" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Continue"}
-        </button>
-      </form>
-    </div>
-  );
-}
-*/
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
-import "./BasicQuestions.css";
-
-export default function BasicQuestions() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    gender: "",
-    area: "",
-    qualification: "",
-    income: "",
-    vintage: "",
-    claimAmount: "",
-    numberOfPolicies: "",
-    policiesChosen: "",
-    policyType: "health",
-    maritalStatus: ""
-  });
-
-  const [error, setError] = useState("");
-  const [validationErrors, setValidationErrors] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const selectedPolicy = location.state?.selectedPolicy;
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-    setError("");
-    setValidationErrors([]);
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setValidationErrors([]);
-    setIsSubmitting(true);
-
-    // Retrieve customer data from localStorage
-    const customerData = JSON.parse(localStorage.getItem("customer")) || {};
-
-    // Debugging: Log retrieved customer data
-    console.log("Retrieved customer data from localStorage:", customerData);
-
-    // Ensure name and email are valid
-    if (!customerData.name || !customerData.email) {
-      setError("Customer details (name or email) are missing. Please log in again.");
-      setIsSubmitting(false);
+    const customer = JSON.parse(localStorage.getItem("customer"));
+    if (!customer || !customer.name || !customer.email) {
+      setError("No customer data found in localStorage");
+      setIsLoading(false);
       return;
     }
 
-    // Create updated form data
-    const updatedFormData = {
+    const payload = {
+      name: customer.name,
+      email: customer.email,
       ...formData,
-      name: customerData.name, // Use customer name from localStorage
-      email: customerData.email, // Use customer email from localStorage
-      policyType: formData.policiesChosen === "A" ? "health" :
-                  formData.policiesChosen === "B" ? "vehicle" :
-                  formData.policiesChosen === "C" ? "life" : "other"
     };
 
-    console.log("Submitting form data:", updatedFormData);
-
     try {
-      const response = await axios.post('http://localhost:5000/api/basic-questions/submit', updatedFormData);
-      console.log("Form submission response:", response.data);
+      console.log("Sending POST request to http://localhost:5000/api/basic-questions/submit with data:", payload);
+      const response = await axios.post("http://localhost:5000/api/basic-questions/submit", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("Response:", response.data);
 
       if (response.data.success) {
-        // Check if user came from health policy card
-        if (selectedPolicy?.title?.includes("Health Insurance")) {
-          navigate('/health-policies');
-        } else {
-          // For all other policies, go to thank you page
-          navigate('/thankyou', { 
-            state: { 
-              formData: updatedFormData,
-              message: "Thank you for your interest! We'll get back to you soon with personalized policy options."
-            } 
-          });
-        }
+        navigate(fromHealthPolicy ? "/health-policies" : "/thankyou");
       } else {
-        setError(response.data.message || "Failed to save form data");
+        setError(response.data.message || "Failed to submit form");
       }
-    } catch (error) {
-      console.error("Form submission error:", error);
-      setError(error.response?.data?.message || "Error submitting form. Please try again.");
+    } catch (err) {
+      console.error("Form submission error:", err);
+      if (err.response) {
+        setError(`Server error: ${err.response.status} - ${err.response.data.message || "Unknown error"}`);
+      } else if (err.request) {
+        setError("Unable to connect to the server. Please ensure the backend is running on http://localhost:5000.");
+      } else {
+        setError(`Request setup error: ${err.message}`);
+      }
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="basic-questions">
-      <h1>Basic Information</h1>
-      <p className="subtitle">Please provide some basic information to help us find the best policy for you</p>
-      
-      <form onSubmit={handleSubmit}>
-        {/* Gender */}
-        <div className="form-group">
-          <label htmlFor="gender">Gender</label>
-          <select
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-          >
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Basic Questions</h2>
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block">Gender</label>
+          <select name="gender" value={formData.gender} onChange={handleChange} className="border p-2 w-full" required>
             <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
         </div>
-
-        {/* Area */}
-        <div className="form-group">
-          <label htmlFor="area">Area</label>
-          <select
-            id="area"
-            name="area"
-            value={formData.area}
-            onChange={handleChange}
-            required
-          >
+        <div>
+          <label className="block">Area</label>
+          <select name="area" value={formData.area} onChange={handleChange} className="border p-2 w-full" required>
             <option value="">Select Area</option>
-            <option value="urban">Urban</option>
-            <option value="rural">Rural</option>
+            <option value="Urban">Urban</option>
+            <option value="Rural">Rural</option>
           </select>
         </div>
-
-        {/* Qualification */}
-        <div className="form-group">
-          <label htmlFor="qualification">Qualification</label>
-          <select
-            id="qualification"
-            name="qualification"
-            value={formData.qualification}
-            onChange={handleChange}
-            required
-          >
+        <div>
+          <label className="block">Qualification</label>
+          <select name="qualification" value={formData.qualification} onChange={handleChange} className="border p-2 w-full" required>
             <option value="">Select Qualification</option>
-            <option value="high-school">High School</option>
-            <option value="bachelor">Bachelor's Degree</option>
-            <option value="master">Master's Degree</option>
-            <option value="phd">PhD</option>
+            <option value="High School">High School</option>
+            <option value="Bachelor">Bachelor</option>
+            <option value="Master">Master</option>
+            <option value="PhD">PhD</option>
           </select>
         </div>
-
-        {/* Annual Income */}
-        <div className="form-group">
-          <label htmlFor="income">Annual Income (₹)</label>
+        <div>
+          <label className="block">Income</label>
           <input
             type="number"
-            id="income"
             name="income"
             value={formData.income}
             onChange={handleChange}
+            className="border p-2 w-full"
+            placeholder="Enter annual income"
             required
-            min="0"
           />
         </div>
-
-        {/* Years of Experience */}
-        <div className="form-group">
-          <label htmlFor="vintage">Years of Experience</label>
+        <div>
+          <label className="block">Vintage (Years with Company)</label>
           <input
             type="number"
-            id="vintage"
             name="vintage"
             value={formData.vintage}
             onChange={handleChange}
+            className="border p-2 w-full"
+            placeholder="Enter years"
             required
-            min="0"
           />
         </div>
-
-        {/* Previous Claim Amount */}
-        <div className="form-group">
-          <label htmlFor="claimAmount">Previous Claim Amount (₹)</label>
+        <div>
+          <label className="block">Claim Amount</label>
           <input
             type="number"
-            id="claimAmount"
             name="claimAmount"
             value={formData.claimAmount}
             onChange={handleChange}
+            className="border p-2 w-full"
+            placeholder="Enter claim amount"
             required
-            min="0"
           />
         </div>
-
-        {/* Number of Existing Policies */}
-        <div className="form-group">
-          <label htmlFor="numberOfPolicies">Number of Existing Policies</label>
+        <div>
+          <label className="block">Number of Policies</label>
           <input
             type="number"
-            id="numberOfPolicies"
             name="numberOfPolicies"
             value={formData.numberOfPolicies}
             onChange={handleChange}
+            className="border p-2 w-full"
+            placeholder="Enter number of policies"
             required
-            min="0"
           />
         </div>
-
-        {/* Type of Policy */}
-        <div className="form-group">
-          <label htmlFor="policiesChosen">Type of Policy</label>
-          <select
-            id="policiesChosen"
-            name="policiesChosen"
-            value={formData.policiesChosen}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Policy Type</option>
-            <option value="A">Health Insurance</option>
-            <option value="B">Vehicle Insurance</option>
-            <option value="C">Life Insurance</option>
+        <div>
+          <label className="block">Policies Chosen</label>
+          <select name="policiesChosen" value={formData.policiesChosen} onChange={handleChange} className="border p-2 w-full" required>
+            <option value="">Select Policy</option>
+            <option value="A">A (Health)</option>
+            <option value="B">B (Vehicle)</option>
+            <option value="C">C (Life)</option>
           </select>
         </div>
-
-        {/* Marital Status */}
-        <div className="form-group">
-          <label htmlFor="maritalStatus">Marital Status</label>
-          <select
-            id="maritalStatus"
-            name="maritalStatus"
-            value={formData.maritalStatus}
-            onChange={handleChange}
-            required
-          >
+        <div>
+          <label className="block">Marital Status</label>
+          <select name="maritalStatus" value={formData.maritalStatus} onChange={handleChange} className="border p-2 w-full" required>
             <option value="">Select Marital Status</option>
-            <option value="single">Single</option>
             <option value="married">Married</option>
+            <option value="single">Single</option>
           </select>
         </div>
-
-        {/* Error Messages */}
-        {error && <div className="error-message">{error}</div>}
-        {validationErrors.length > 0 && (
-          <div className="validation-errors">
-            {validationErrors.map((err, index) => (
-              <p key={index} className="error-message">{err}</p>
-            ))}
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <button type="submit" className="submit-btn" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Continue"}
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded" disabled={isLoading}>
+          {isLoading ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>
   );
-}
+};
+
+export default BasicQuestions;

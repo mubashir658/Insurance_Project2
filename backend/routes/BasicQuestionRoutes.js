@@ -1,91 +1,15 @@
-/*import express from 'express';
-import BasicQuestion from '../models/BasicQuestion.js';
+import express from "express";
+import { spawn } from "child_process";
+import BasicQuestion from "../models/BasicQuestion.js";
+import fs from "fs";
+import path from "path";
+import os from "os";
 
 const router = express.Router();
 
-router.post('/submit', async (req, res) => {
+router.post("/submit", async (req, res) => {
   try {
-    console.log("Received form data:", JSON.stringify(req.body, null, 2));
-
-    // Validate required fields
-    const requiredFields = ['gender', 'area', 'qualification', 'income', 'vintage', 'claimAmount', 'numberOfPolicies', 'policiesChosen', 'policyType', 'maritalStatus'];
-    const missingFields = requiredFields.filter(field => !req.body[field]);
-    
-    if (missingFields.length > 0) {
-      console.log("Missing required fields:", missingFields);
-      return res.status(400).json({
-        success: false,
-        message: `Missing required fields: ${missingFields.join(', ')}`
-      });
-    }
-
-    // Create and save the document
-    console.log("Attempting to create BasicQuestion document...");
-    const basicQuestion = new BasicQuestion(req.body);
-    
-    console.log("Attempting to save to database...");
-    await basicQuestion.save();
-    
-    console.log("Form data saved successfully:", {
-      id: basicQuestion._id,
-      timestamp: basicQuestion.createdAt
-    });
-
-    res.status(201).json({ 
-      success: true, 
-      message: 'Form data saved successfully',
-      data: basicQuestion 
-    });
-  } catch (error) {
-    console.error("Detailed error information:", {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-      validationErrors: error.errors ? Object.keys(error.errors).map(key => ({
-        field: key,
-        message: error.errors[key].message
-      })) : null
-    });
-
-    // Send more detailed error information to the client
-    res.status(500).json({ 
-      success: false, 
-      message: error.message.includes("validation") 
-        ? "Invalid form data" 
-        : "Error saving form data",
-      error: {
-        name: error.name,
-        message: error.message,
-        validationErrors: error.errors ? Object.keys(error.errors).map(key => ({
-          field: key,
-          message: error.errors[key].message
-        })) : null
-      }
-    });
-  }
-});
-
-export default router; */
-
-const express = require('express');
-const BasicQuestion = require('../models/BasicQuestion');
-
-const router = express.Router();
-
-// POST /api/basic-questions/submit
-router.post('/submit', async (req, res) => {
-  try {
-    const { name, email, gender, area, qualification, income, vintage, claimAmount, numberOfPolicies, policiesChosen, maritalStatus } = req.body;
-
-    // Validate required fields
-    if (!name || !email || !gender || !area || !qualification || !income || !vintage || !claimAmount || !numberOfPolicies || !policiesChosen || !maritalStatus) {
-      return res.status(400).json({
-        success: false,
-        message: 'All fields are required',
-      });
-    }
-
-    const basicQuestion = new BasicQuestion({
+    const {
       name,
       email,
       gender,
@@ -96,25 +20,127 @@ router.post('/submit', async (req, res) => {
       claimAmount,
       numberOfPolicies,
       policiesChosen,
-      policyType: policiesChosen === "A" ? "health" :
-                 policiesChosen === "B" ? "vehicle" :
-                 policiesChosen === "C" ? "life" : "other",
       maritalStatus,
+    } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ success: false, message: "Name and email are required" });
+    }
+
+    const policyTypeMap = {
+      A: "health",
+      B: "vehicle",
+      C: "life",
+    };
+    const policyType = policyTypeMap[policiesChosen] || "unknown";
+
+    const inputData = {
+      gender,
+      area,
+      qualification,
+      income: income ? (Number(income) <= 500000 ? "2L-5L" : "5L-10L") : "2L-5L", // Align with le_income.classes_
+      marital_status: maritalStatus === "married" ? 1 : 0,
+      vintage: Number(vintage) || 0,
+      claim_amount: Number(claimAmount) || 0,
+      num_policies: Number(numberOfPolicies) > 1 ? "More than 1" : "1",
+      policy: policiesChosen || "A",
+      type_of_policy: "Silver",
+    };
+
+    console.log("Input data for grok.py:", inputData);
+
+    const tempDir = os.tmpdir();
+    const tempFilePath = path.join(tempDir, `grok_input_${Date.now()}.json`);
+    fs.writeFileSync(tempFilePath, JSON.stringify(inputData, null, 2));
+
+    const pythonProcess = spawn(
+      "C:\\Users\\vamsh\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      ["C:\\Users\\vamsh\\Source\\ps-2\\Insurance_Project2\\dl\\grok.py", tempFilePath]
+    );
+
+    let pythonOutput = "";
+    let pythonError = "";
+
+    pythonProcess.stdout.on("data", (data) => {
+      pythonOutput += data.toString();
     });
 
-    await basicQuestion.save();
+    pythonProcess.stderr.on("data", (data) => {
+      pythonError += data.toString();
+    });
 
-    res.status(201).json({
-      success: true,
-      message: 'Form data saved successfully',
+    pythonProcess.on("error", (error) => {
+      console.error("Python process error:", error.message);
+      pythonError += `Process error: ${error.message}\n`;
+    });
+
+    pythonProcess.on("close", async (code) => {
+      try {
+        fs.unlinkSync(tempFilePath);
+      } catch (err) {
+        console.error("Error deleting temporary file:", err.message);
+      }
+
+      console.log("Python script exited with code:", code);
+      console.log("Raw Python output:", pythonOutput);
+      console.log("Raw Python error:", pythonError);
+
+      if (code !== 0) {
+        return res.status(500).json({
+          success: false,
+          message: `Python script failed with code ${code}`,
+          error: pythonError || "No error output captured",
+          rawOutput: pythonOutput,
+        });
+      }
+
+      try {
+        const result = JSON.parse(pythonOutput.trim());
+        console.log("Parsed Python script output:", result);
+
+        if (result.error) {
+          return res.status(500).json({
+            success: false,
+            message: "Python script returned an error",
+            error: result.error,
+            rawOutput: pythonOutput,
+          });
+        }
+
+        const basicQuestion = new BasicQuestion({
+          name,
+          email,
+          gender,
+          area,
+          qualification,
+          income,
+          vintage,
+          claimAmount,
+          numberOfPolicies,
+          policiesChosen,
+          policyType,
+          maritalStatus,
+          result: result.prominent || "No",
+        });
+
+        await basicQuestion.save();
+        console.log("Data saved to MongoDB:", basicQuestion);
+        res.json({ success: true, message: "Form data saved successfully", result: result.prominent });
+      } catch (error) {
+        console.error("Error processing Python output or saving to MongoDB:", error.message, error.stack);
+        res.status(500).json({
+          success: false,
+          message: "Failed to process model prediction or save data",
+          error: error.message,
+          rawOutput: pythonOutput,
+          rawError: pythonError,
+        });
+      }
     });
   } catch (error) {
-    console.error("Error saving basic questions:", error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to save form data',
-    });
+    console.error("Error in /submit endpoint:", error.message, error.stack);
+    res.status(500).json({ success: false, message: "Failed to process form submission", error: error.message });
   }
 });
 
-module.exports = router;
+export default router;

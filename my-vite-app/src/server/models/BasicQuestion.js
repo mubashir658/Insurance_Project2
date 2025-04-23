@@ -1,6 +1,8 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const basicQuestionSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
   gender: String,
   area: String,
   qualification: String,
@@ -11,10 +13,11 @@ const basicQuestionSchema = new mongoose.Schema({
   policiesChosen: String,
   policyType: String,
   maritalStatus: String,
+  result: String,
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-module.exports = mongoose.model('BasicQuestion', basicQuestionSchema); 
+export default mongoose.model('BasicQuestion', basicQuestionSchema);

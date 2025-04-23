@@ -73,7 +73,8 @@ router.post('/', async (req, res) => {
       numberOfPolicies,
       policiesChosen,
       policyType,
-      maritalStatus
+      maritalStatus,
+      result,
     } = req.body;
 
     const newEntry = new BasicQuestion({
@@ -88,7 +89,8 @@ router.post('/', async (req, res) => {
       numberOfPolicies,
       policiesChosen,
       policyType,
-      maritalStatus
+      maritalStatus,
+      result,
     });
 
     await newEntry.save();

@@ -11,6 +11,7 @@ const basicQuestionSchema = new mongoose.Schema({
   policiesChosen: String,
   policyType: String,
   maritalStatus: String,
+  re
   createdAt: {
     type: Date,
     default: Date.now
@@ -34,6 +35,7 @@ const basicQuestionSchema = new mongoose.Schema({
   policiesChosen: String,
   policyType: String,
   maritalStatus: String,
+  result: String,
   createdAt: {
     type: Date,
     default: Date.now

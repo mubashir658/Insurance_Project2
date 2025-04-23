@@ -52,18 +52,23 @@ const Login = () => {
     const endpoint = isSignup ? "/auth/signup" : "/auth/login";
     const payload = isSignup
       ? {
-          ...formData,
-          role: isAgent ? "agent" : "customer",
-          fullName: formData.name
-        }
-      : { 
-          email: formData.email, 
+          fullName: formData.name,
+          email: formData.email,
+          employeeId: formData.employeeId,
           password: formData.password,
-          role: isAgent ? "agent" : "customer"
+          role: isAgent ? "agent" : "customer",
+        }
+      : {
+          email: formData.email,
+          password: formData.password,
+          role: isAgent ? "agent" : "customer",
         };
 
     try {
-      const response = await axios.post(`http://localhost:5000${endpoint}`, payload);
+      console.log(`Sending POST request to http://localhost:5000${endpoint} with data:`, payload);
+      const response = await axios.post(`http://localhost:5000${endpoint}`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
       console.log("API Response:", response.data);
 
       if (response.data.success) {
@@ -75,11 +80,14 @@ const Login = () => {
           if (!response.data.data) {
             throw new Error("Invalid login response");
           }
-          
+
+          // Set localStorage for BasicQuestions.jsx
+          localStorage.setItem("customer", JSON.stringify({ name: response.data.data.name, email: response.data.data.email }));
+
           const loginResult = await login(response.data.data);
-          
+
           if (loginResult.success) {
-            navigate(response.data.data.role === 'agent' ? "/agent-dashboard" : "/user-dashboard", { replace: true });
+            navigate(response.data.data.role === 'agent' ? "/agent-dashboard" : "/basic-questions", { replace: true });
           } else {
             throw new Error(loginResult.error || "Login failed");
           }
@@ -96,7 +104,7 @@ const Login = () => {
         setError(errorMessages[response.data.message] || response.data.message || "An error occurred.");
       }
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("Auth error:", err);
       const errorMessages = {
         "User not found": "No account found with this email.",
         "Invalid credentials": "Incorrect email or password.",
@@ -106,7 +114,7 @@ const Login = () => {
       setError(
         err.response?.data?.message
           ? errorMessages[err.response.data.message] || err.response.data.message
-          : "Unable to connect to the server. Please try again."
+          : "Unable to connect to the server. Please ensure the backend is running on http://localhost:5000."
       );
     } finally {
       setIsLoading(false);

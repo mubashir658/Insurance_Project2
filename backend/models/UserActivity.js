@@ -1,18 +1,3 @@
-/*import mongoose from "mongoose";
-
-const userActivitySchema = new mongoose.Schema({
-  email: String,
-  role: String, // 'customer' or 'agent'
-  type: String, // 'signup' or 'login'
-  status: String, // 'success' or 'failure'
-  timestamp: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-export default mongoose.model("UserActivity", userActivitySchema);
-*/
 import mongoose from "mongoose";
 
 const userActivitySchema = new mongoose.Schema({
@@ -23,6 +8,4 @@ const userActivitySchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 });
 
-const UserActivity = mongoose.model("UserActivity", userActivitySchema);
-
-export default UserActivity;
+export default mongoose.model("UserActivity", userActivitySchema);
