@@ -5,7 +5,7 @@ import axios from 'axios';
 import './Profile.css';
 
 const Profile = () => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, updateUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,10 +36,7 @@ const Profile = () => {
       });
 
       // Update user context with new data
-      setUser(prevUser => ({
-        ...prevUser,
-        ...response.data
-      }));
+      updateUser(response.data);
 
       // Show success message and exit edit mode
       alert('Profile updated successfully!');

@@ -1,11 +1,12 @@
-/* BasicQuestions.css - Redesigned */
-.container {
+/* BasicQuestions.css - Redesigned for BasicQuestions.jsx */
+.basic-questions-container {
   max-width: 900px;
   margin: 2rem auto;
   padding: 2.5rem;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.5s ease;
 }
 
 h2 {
@@ -40,7 +41,7 @@ input {
   background-color: #ffffff;
   font-size: 1rem;
   color: #111827;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 select:focus,
@@ -48,6 +49,7 @@ input:focus {
   outline: none;
   border-color: #4f46e5;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+  transform: translateY(-1px);
 }
 
 input::placeholder {
@@ -80,38 +82,46 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.text-red-500 {
+.error {
   color: #ef4444;
   padding: 0.75rem;
   background-color: #fef2f2;
   border-radius: 6px;
-  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
   font-size: 0.9375rem;
   grid-column: span 2;
+  text-align: center;
 }
 
-/* Simple fade-in animation */
+.result-container {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  grid-column: span 2;
+  text-align: center;
+}
+
+.result-container h3 {
+  color: #111827;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.result-container p {
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+/* Fade-in animation */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-.container {
-  animation: fadeIn 0.5s ease;
-}
-
-/* Subtle field animation */
-select, input {
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-select:focus, input:focus {
-  transform: translateY(-1px);
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .container {
+  .basic-questions-container {
     padding: 1.5rem;
     margin: 1rem;
   }
@@ -125,7 +135,8 @@ select:focus, input:focus {
     grid-column: span 1;
   }
   
-  .text-red-500 {
+  .error,
+  .result-container {
     grid-column: span 1;
   }
 }

@@ -47,11 +47,11 @@ const ThankYouPage = () => {
           <div className="contact-info">
             <div className="info-item">
               <i className="fas fa-phone-alt icon"></i>
-              <span>+1 (555) 123-4567</span>
+              <span>+91 9991113331</span>
             </div>
             <div className="info-item">
               <i className="fas fa-envelope icon"></i>
-              <span>support@healthplans.com</span>
+              <span>insurewise@healthplans.com</span>
             </div>
           </div>
           

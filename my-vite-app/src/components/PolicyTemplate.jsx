@@ -28,7 +28,7 @@ const PolicyTemplate = ({ policyData }) => {
       totalPremium: calculateTotal()
     };
     
-    navigate('/full-detail', { state: { selectedPolicyData } });
+    navigate('/thankyou', { state: { selectedPolicyData } });
   };
 
   return (
@@ -131,12 +131,12 @@ const PolicyTemplate = ({ policyData }) => {
         {!showQuestions && isEligible === null && (
           <div className="eligibility-container">
             <button className="eligibility-btn" onClick={handleEligibilityCheck}>
-              Check Eligibility
+              Continue
             </button>
           </div>
         )}
 
-        {/* Removed results section since we're navigating immediately */}
+        
       </div>
     </div>
   );
