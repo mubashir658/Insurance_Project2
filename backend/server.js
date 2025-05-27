@@ -9,12 +9,16 @@ import express from "express";
 
    const app = express();
 
-   app.use(cors({
-     origin: "http://localhost:5173",
-     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+   // Configure CORS to allow requests from the frontend
+app.use(cors({
+     origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
      credentials: true,
-     allowedHeaders: ['Content-Type', 'Authorization']
+     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
    }));
+   
+// Handle preflight requests
+app.options('*', cors());
 
    app.use(express.json());
 
@@ -48,8 +52,33 @@ import express from "express";
    app.use("/auth", authRoutes);
    app.use("/api/basic-questions", basicQuestionRoutes);
 
-   app.get('/health', (req, res) => {
-     res.json({ status: 'ok' });
+   // Health check endpoint
+app.get('/health', (req, res) => {
+     res.json({ 
+       status: 'ok',
+       timestamp: new Date().toISOString(),
+       environment: process.env.NODE_ENV || 'development',
+       cors: {
+         origins: ["http://localhost:5173", "http://127.0.0.1:5173"],
+         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+       }
+     });
+   });
+   
+// Root endpoint for quick testing
+app.get('/', (req, res) => {
+     res.json({ 
+       message: 'Insurance API is running',
+       version: '1.0.0',
+       endpoints: [
+         '/health',
+         '/auth/login',
+         '/auth/signup',
+         '/api/basic-questions',
+         '/api/basic-questions/test',
+         '/api/basic-questions/auth-test'
+       ]
+     });
    });
 
    app.use((err, req, res, next) => {

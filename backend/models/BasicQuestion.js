@@ -15,7 +15,11 @@ import mongoose from 'mongoose';
      pre_existing_conditions: { type: Number, required: true },
      result: { type: String, required: true },
      probability: { type: Number, required: true },
-     createdAt: { type: Date, default: Date.now }
+     createdAt: { type: Date, default: Date.now },
+     updatedAt: { type: Date, default: Date.now }
    });
+
+   // Add index for faster queries by userId and createdAt
+   BasicQuestionSchema.index({ userId: 1, createdAt: -1 });
 
    export default mongoose.model('BasicQuestion', BasicQuestionSchema);

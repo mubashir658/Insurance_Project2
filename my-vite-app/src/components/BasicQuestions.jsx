@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
    import { useNavigate } from 'react-router-dom';
+   import axios from 'axios';
    import './BasicQuestions.css';
 
    const BasicQuestions = () => {
@@ -16,7 +17,57 @@ import React, { useState } from 'react';
        income: 1,
        pre_existing_conditions: 3
      });
+     const [loading, setLoading] = useState(true);
+     const [hasExistingData, setHasExistingData] = useState(false);
      const navigate = useNavigate();
+
+     // Fetch previous data when component mounts
+     useEffect(() => {
+       const fetchPreviousData = async () => {
+         try {
+           const token = localStorage.getItem('token');
+           if (!token) {
+             setLoading(false);
+             return;
+           }
+
+           const response = await axios.get('http://localhost:5000/api/basic-questions/user-data', {
+             headers: {
+               'Authorization': `Bearer ${token}`
+             }
+           });
+
+           if (response.data.success && response.data.data) {
+             // Pre-fill the form with existing data
+             const userData = response.data.data;
+             setFormData({
+               age: userData.age,
+               bmi: userData.bmi,
+               smoker: userData.smoker,
+               dependents: userData.dependents,
+               hospital_visits_last_year: userData.hospital_visits_last_year,
+               chronic_disease: userData.chronic_disease,
+               physical_activity_level: userData.physical_activity_level,
+               alcohol_consumption: userData.alcohol_consumption,
+               gender: userData.gender,
+               income: userData.income,
+               pre_existing_conditions: userData.pre_existing_conditions
+             });
+             setHasExistingData(true);
+           }
+         } catch (error) {
+           console.log('No previous data found or error:', error.message);
+           // If 404 error (no data found), that's expected for new users
+           if (error.response && error.response.status !== 404) {
+             console.error('Error fetching user data:', error);
+           }
+         } finally {
+           setLoading(false);
+         }
+       };
+
+       fetchPreviousData();
+     }, []);
 
      const handleChange = (e) => {
        setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,39 +79,53 @@ import React, { useState } from 'react';
          const token = localStorage.getItem('token');
          console.log('Token retrieved:', token);
          if (!token) throw new Error('Please log in to continue');
-         const response = await fetch('http://localhost:5000/api/basic-questions', {
-           method: 'POST',
+         
+         const response = await axios.post('http://localhost:5000/api/basic-questions', {
+           ...formData,
+           smoker: parseInt(formData.smoker),
+           chronic_disease: parseInt(formData.chronic_disease),
+           physical_activity_level: parseInt(formData.physical_activity_level),
+           alcohol_consumption: parseInt(formData.alcohol_consumption),
+           gender: parseInt(formData.gender),
+           income: parseInt(formData.income),
+           pre_existing_conditions: parseInt(formData.pre_existing_conditions)
+         }, {
            headers: {
              'Content-Type': 'application/json',
              'Authorization': `Bearer ${token}`
-           },
-           body: JSON.stringify({
-             ...formData,
-             smoker: parseInt(formData.smoker),
-             chronic_disease: parseInt(formData.chronic_disease),
-             physical_activity_level: parseInt(formData.physical_activity_level),
-             alcohol_consumption: parseInt(formData.alcohol_consumption),
-             gender: parseInt(formData.gender),
-             income: parseInt(formData.income),
-             pre_existing_conditions: parseInt(formData.pre_existing_conditions)
-           })
+           }
          });
-         console.log('Response status:', response.status);
-         if (!response.ok) {
-           const errorData = await response.json();
-           console.log('Error response:', errorData);
-           throw new Error(errorData.message || 'Failed to save data');
+         
+         console.log('Response:', response.data);
+         if (response.data.success) {
+           navigate('/health-policies');
+         } else {
+           throw new Error(response.data.message || 'Failed to save data');
          }
-         navigate('/health-policies');
        } catch (err) {
          console.error('Submission error:', err.message);
          alert('Error: ' + err.message);
        }
      };
 
+     if (loading) {
+       return (
+         <div className="basic-questions-container">
+           <div className="loading-spinner">
+             <p>Loading...</p>
+           </div>
+         </div>
+       );
+     }
+
      return (
        <div className="basic-questions-container">
          <h2>Health Insurance Prediction</h2>
+         {hasExistingData && (
+           <div className="update-notice">
+             <p>You already have health information on file. Any changes you make will update your existing record.</p>
+           </div>
+         )}
          <form onSubmit={handleSubmit}>
            <div>
              <label>Age:</label>
@@ -170,7 +235,7 @@ import React, { useState } from 'react';
                <option value="4">Asthma</option>
              </select>
            </div>
-           <button type="submit">Continue</button>
+           <button type="submit">{hasExistingData ? 'Update and Continue' : 'Continue'}</button>
          </form>
        </div>
      );

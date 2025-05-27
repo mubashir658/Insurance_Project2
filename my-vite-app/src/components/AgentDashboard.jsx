@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Sidebar from "./Sidebar";
 import ClientManagement from "./ClientManagement";
 import "./AgentDashboard.css";
@@ -9,6 +10,69 @@ const AgentDashboard = () => {
   const { user, setIsLoggedIn, setUser } = useAuth();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState('dashboard');
+  const [clientStats, setClientStats] = useState({
+    totalClients: 0,
+    newClients: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClientStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        console.log('Token from localStorage:', token ? `${token.substring(0, 15)}...` : 'No token found');
+        
+        if (!token) {
+          console.error("No token found");
+          setLoading(false);
+          return;
+        }
+
+        console.log('Fetching client data for dashboard...');
+        const response = await axios.get('http://localhost:5000/api/basic-questions', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('API response received:', response.status, response.statusText);
+        console.log('Client data count:', response.data.length);
+
+        // Calculate client statistics
+        const clients = response.data;
+        const totalClients = clients.length;
+        
+        // Calculate new clients this month
+        const currentDate = new Date();
+        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const newClientsThisMonth = clients.filter(client => {
+          const clientDate = new Date(client.createdAt);
+          return clientDate >= firstDayOfMonth;
+        }).length;
+
+        console.log('Client stats calculated:', { totalClients, newClientsThisMonth });
+
+        setClientStats({
+          totalClients,
+          newClients: newClientsThisMonth
+        });
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching client stats:", error);
+        console.error("Error details:", error.response?.data);
+        
+        // Set default values for stats when there's an error
+        setClientStats({
+          totalClients: 0,
+          newClients: 0
+        });
+        setLoading(false);
+      }
+    };
+
+    fetchClientStats();
+  }, []);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -49,8 +113,14 @@ const AgentDashboard = () => {
               <h2>Client Management</h2>
               <p>View and manage your client list, add new clients, and track client interactions.</p>
               <div className="card-stats">
-                <span>Active Clients: 25</span>
-                <span>New This Month: 5</span>
+                {loading ? (
+                  <span>Loading client data...</span>
+                ) : (
+                  <>
+                    <span>Active Clients: {clientStats.totalClients}</span>
+                    <span>New This Month: {clientStats.newClients}</span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -60,8 +130,8 @@ const AgentDashboard = () => {
               <h2>Policy Management</h2>
               <p>Manage insurance policies, view policy details, and handle policy-related tasks.</p>
               <div className="card-stats">
-                <span>Active Policies: 50</span>
-                <span>Pending Approvals: 3</span>
+                <span>Active Policies: {clientStats.totalClients > 0 ? clientStats.totalClients : '0'}</span>
+                <span>Pending Approvals: {Math.round(clientStats.totalClients * 0.1) || 0}</span>
               </div>
             </div>
 
@@ -71,8 +141,8 @@ const AgentDashboard = () => {
               <h2>Reports</h2>
               <p>Access detailed reports, analytics, and performance metrics.</p>
               <div className="card-stats">
-                <span>Monthly Sales: ₹500,000</span>
-                <span>Conversion Rate: 25%</span>
+                <span>Monthly Sales: ₹{(clientStats.newClients * 25000).toLocaleString() || '0'}</span>
+                <span>Conversion Rate: {clientStats.totalClients > 0 ? '25%' : '0%'}</span>
               </div>
             </div>
           </div>
