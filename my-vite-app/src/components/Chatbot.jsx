@@ -1,18 +1,99 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { marked } from 'marked';
 import './Chatbot.css';
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { 
-            text: "Hello! I'm your insurance advisor. I can help you with:\n\n1. Policy Types & Coverage:\n   • Health Insurance (₹500/month)\n   • Life Insurance (₹1000/month)\n   • Critical Illness (₹800/month)\n\n2. Claim Processes:\n   • Cashless treatment\n   • Reimbursement claims\n   • Required documents\n\n3. Network Hospitals:\n   • 5000+ hospitals across India\n   • 24/7 emergency support\n   • Cashless treatment process\n\n4. Policy Management:\n   • Easy renewal process\n   • 15 days grace period\n   • Policy portability\n\nWhat would you like to know about?", 
-            sender: 'bot' 
+        {
+            type: 'bot',
+            content: 'Hello! I\'m your Health Insurance Assistant. How can I help you today? You can ask me about:',
+            options: [
+                'General Information about Policies',
+                'Policy Coverage',
+                'Premium and Payment',
+                'Claim and Renewal',
+                'Exclusions',
+                'Policy Types and Riders',
+                'Policy Upgrades',
+                'Comparison and Recommendations'
+            ]
         }
     ]);
-    const [input, setInput] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [inputValue, setInputValue] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
+
+    const faqData = {
+        "general information": {
+            title: "General Information about Policies",
+            questions: {
+                "what is health insurance": "A contract that covers medical expenses due to illness, injury, or surgery, reducing your healthcare costs.",
+                "how does health insurance work": "You pay a premium, and the insurer covers medical costs as per policy terms (hospital stays, surgeries, etc.).",
+                "difference between individual and family": "Individual plans cover one person; family plans cover multiple members under one policy.",
+                "benefits of health insurance": "Financial protection, access to care, cashless treatment, and tax benefits.",
+                "claim process": "Notify the insurer, submit documents (bills, prescriptions), and choose cashless or reimbursement claim."
+            }
+        },
+        "policy coverage": {
+            title: "Policy Coverage",
+            questions: {
+                "what is covered": "Hospitalization, surgery, doctor visits, tests, ambulance, daycare, maternity, and pre-existing conditions (after waiting).",
+                "maternity coverage": "Yes, including delivery, hospitalization, pre- and post-natal care (after waiting period).",
+                "pre existing conditions": "Yes, after a waiting period (usually 2–4 years). Check policy terms.",
+                "daycare treatments": "Yes, including cataract, dialysis, chemotherapy, etc.",
+                "mental health coverage": "Yes, many policies now include mental health coverage. Check specific policy details."
+            }
+        },
+        "premium": {
+            title: "Premium and Payment",
+            questions: {
+                "how is premium calculated": "Based on age, health, sum insured, plan type, and riders.",
+                "factors affecting premium": "Age, medical history, coverage amount, insurer network, pre-existing conditions.",
+                "installment payment": "Yes, monthly/quarterly/annual options are available.",
+                "missed payment": "Your policy may lapse after the grace period. Late fee or reinstatement may apply."
+            }
+        },
+        "claim": {
+            title: "Claim and Renewal",
+            questions: {
+                "how to file claim": "Submit claim online with documents like bills, summary, prescriptions.",
+                "claim documents": "Policy copy, bills, discharge summary, test reports, ID proof.",
+                "online renewal": "Yes, login to your account and complete renewal.",
+                "check claim status": "Use your login and claim reference number on our site to track."
+            }
+        },
+        "exclusions": {
+            title: "Exclusions",
+            questions: {
+                "what are exclusions": "Cosmetic surgery, dental, pre-existing during waiting, drug/alcohol-related, etc.",
+                "cosmetic treatments": "Not unless medically necessary (e.g., post-accident reconstruction).",
+                "dental coverage": "Only if medically necessary or included via add-on riders."
+            }
+        },
+        "policy types": {
+            title: "Policy Types and Riders",
+            questions: {
+                "types of policies": "Health Insurance – Covers general medical expenses.\nCritical Illness Insurance – Lump sum payout on critical illness diagnosis.\nFamily Health Insurance – Covers entire family in one policy.\nSenior Citizen Health Insurance – Designed for elderly individuals.\nTop-up Plans – Extra coverage over base policy at lower cost.",
+                "what are riders": "Add-ons like critical illness, maternity, hospital cash—enhance base coverage.",
+                "critical illness coverage": "Yes, for financial support on serious diseases like cancer or heart attack."
+            }
+        },
+        "upgrades": {
+            title: "Policy Upgrades",
+            questions: {
+                "upgrade policy": "Yes, at renewal or via policy revision (subject to terms).",
+                "increase coverage": "Request during renewal or add top-up. May need medical checks."
+            }
+        },
+        "comparison": {
+            title: "Comparison and Recommendations",
+            questions: {
+                "best family policy": "Star Family Health Optima – ₹1.5 Cr cover, 650+ hospitals, maternity & daycare included.",
+                "compare plans": "Care Plus – ₹5L cover, ₹35K premium, 380+ hospitals, riders: CI/OPD.\nNiva Bupa Aspire Gold+ – ₹5L, ₹37.5K, 234+ hospitals, riders: Hospital Cash/Safeguard+.\nStar Family Health Optima – ₹1.5Cr, ₹1.99L, 650+ hospitals, ideal for families.\nSenior Citizen Plan – ₹5L, ₹42K, designed for elderly.",
+                "pre existing condition policy": "Care Plus and Senior Citizen Plan – both cover pre-existing conditions post-waiting period."
+            }
+        }
+    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -22,43 +103,64 @@ const Chatbot = () => {
         scrollToBottom();
     }, [messages]);
 
-    const handleSend = async (e) => {
-        e.preventDefault();
-        if (input.trim() === '') return;
+    const findAnswer = (query) => {
+        query = query.toLowerCase();
+        
+        // Check each category
+        for (const [category, data] of Object.entries(faqData)) {
+            // Check if query matches category
+            if (query.includes(category)) {
+                return {
+                    type: 'bot',
+                    content: `Here's what I know about ${data.title}:`,
+                    options: Object.keys(data.questions)
+                };
+            }
+            
+            // Check questions in category
+            for (const [question, answer] of Object.entries(data.questions)) {
+                if (query.includes(question)) {
+                    return {
+                        type: 'bot',
+                        content: answer
+                    };
+                }
+            }
+        }
+
+        // If no direct match, provide category options
+        return {
+            type: 'bot',
+            content: "I'm not sure about that. Would you like to know about any of these topics?",
+            options: Object.keys(faqData).map(category => category.charAt(0).toUpperCase() + category.slice(1))
+        };
+    };
+
+    const handleSend = () => {
+        if (!inputValue.trim()) return;
 
         // Add user message
-        const userMessage = { text: input, sender: 'user' };
-        setMessages(prev => [...prev, userMessage]);
-        setInput('');
-        setIsLoading(true);
+        setMessages(prev => [...prev, { type: 'user', content: inputValue }]);
+        setInputValue('');
+        setIsTyping(true);
 
-        try {
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer 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',
-                    'HTTP-Referer': 'https://www.sitename.com',
-                    'X-Title': 'SiteName',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: 'deepseek/deepseek-r1:free',
-                    messages: [{ role: 'user', content: input }],
-                }),
-            });
+        // Simulate bot thinking
+        setTimeout(() => {
+            setIsTyping(false);
+            const response = findAnswer(inputValue);
+            setMessages(prev => [...prev, response]);
+        }, 1000);
+    };
 
-            const data = await response.json();
-            const botResponse = data.choices?.[0]?.message?.content || 'No response received.';
-            setMessages(prev => [...prev, { text: botResponse, sender: 'bot' }]);
-        } catch (error) {
-            console.error('Chatbot Error:', error);
-            setMessages(prev => [...prev, { 
-                text: "I can help you with information about:\n\n1. Policy Types & Coverage\n2. Claim Processes\n3. Required Documents\n4. Network Hospitals\n5. Renewal Procedures\n6. Premium Information\n\nPlease ask about any of these topics.", 
-                sender: 'bot' 
-            }]);
-        } finally {
-            setIsLoading(false);
-        }
+    const handleOptionClick = (option) => {
+        setMessages(prev => [...prev, { type: 'user', content: option }]);
+        setIsTyping(true);
+
+        setTimeout(() => {
+            setIsTyping(false);
+            const response = findAnswer(option);
+            setMessages(prev => [...prev, response]);
+        }, 1000);
     };
 
     return (
@@ -67,32 +169,42 @@ const Chatbot = () => {
                 className="chatbot-float-button"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
+                {isOpen ? '✕' : '💬'}
             </button>
 
             {isOpen && (
                 <div className="chatbot-container">
                     <div className="chatbot-header">
-                        <h3>Insurance Advisor</h3>
+                        <h3>Health Insurance Assistant</h3>
                         <button 
                             className="chatbot-close-button"
                             onClick={() => setIsOpen(false)}
                         >
-                            ×
+                            ✕
                         </button>
                     </div>
+
                     <div className="chatbot-messages">
                         {messages.map((message, index) => (
-                            <div key={index} className={`message ${message.sender}`}>
-                                {message.text.split('\n').map((line, i) => (
-                                    <p key={i}>{line}</p>
-                                ))}
+                            <div key={index} className={`message ${message.type}`}>
+                                <p>{message.content}</p>
+                                {message.options && (
+                                    <div className="message-options">
+                                        {message.options.map((option, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => handleOptionClick(option)}
+                                                className="option-button"
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
-                        {isLoading && (
-                            <div className="message bot typing-indicator">
+                        {isTyping && (
+                            <div className="typing-indicator">
                                 <span></span>
                                 <span></span>
                                 <span></span>
@@ -100,21 +212,23 @@ const Chatbot = () => {
                         )}
                         <div ref={messagesEndRef} />
                     </div>
-                    <form onSubmit={handleSend} className="chatbot-input">
+
+                    <div className="chatbot-input">
                         <input
                             type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder="Ask about insurance policies, claims, or coverage..."
-                            disabled={isLoading}
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                            placeholder="Type your question here..."
+                            disabled={isTyping}
                         />
-                        <button type="submit" disabled={isLoading}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
+                        <button 
+                            onClick={handleSend}
+                            disabled={isTyping || !inputValue.trim()}
+                        >
+                            Send
                         </button>
-                    </form>
+                    </div>
                 </div>
             )}
         </>
