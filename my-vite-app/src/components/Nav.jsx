@@ -26,7 +26,7 @@ import React from 'react';
              <Link to="/helpline" className="nav-link">HelpLine</Link>
              {user ? (
                <>
-                 <Link to={user.role === 'agent' ? '/agent-dashboard' : '/basic-questions'} className="nav-link">
+                 <Link to={user.role === 'agent' ? '/agent-dashboard' : '/user-dashboard'} className="nav-link">
                    Dashboard
                  </Link>
                  <Link to="/profile" className="nav-link">Profile</Link>

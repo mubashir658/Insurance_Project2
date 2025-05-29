@@ -1,7 +1,7 @@
 .help-container {
   font-family: 'Arial', sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   padding: 20px;
 }
 
@@ -107,6 +107,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 30px;
+  width: 100%;
 }
 
 .review-section h2 {
@@ -121,6 +122,10 @@
   margin-bottom: 20px;
 }
 
+.review-section form {
+  width: 100%;
+}
+
 textarea {
   width: 100%;
   min-height: 150px;
@@ -131,6 +136,7 @@ textarea {
   font-size: 1rem;
   resize: vertical;
   margin-bottom: 15px;
+  box-sizing: border-box;
 }
 
 textarea:focus {
@@ -140,6 +146,7 @@ textarea:focus {
 }
 
 .submit-button {
+  width: 100%;
   background: #3498db;
   color: white;
   border: none;

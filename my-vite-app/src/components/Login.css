@@ -46,6 +46,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  color: #3f3b3b;
 }
 
 .role-btn.active {
@@ -85,6 +86,7 @@
   border-radius: 6px;
   font-size: 1rem;
   transition: border 0.2s;
+  color: #3f3b3b;
 }
 
 .form-group input:focus {

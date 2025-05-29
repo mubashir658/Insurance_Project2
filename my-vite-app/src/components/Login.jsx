@@ -81,14 +81,20 @@ import React, { useState } from "react";
                throw new Error("Invalid login response: Missing data or token");
              }
 
-             localStorage.setItem("token", response.data.token);
-             localStorage.setItem("customer", JSON.stringify({ name: response.data.data.name, email: response.data.data.email }));
-             console.log("Stored token:", localStorage.getItem("token"));
+             const userData = {
+               name: response.data.data.name,
+               email: response.data.data.email,
+               role: response.data.data.role
+             };
 
-             const loginResult = await login({ ...response.data.data, token: response.data.token });
+             localStorage.setItem("token", response.data.token);
+             localStorage.setItem("user", JSON.stringify(userData));
+             console.log("Stored token:", response.data.token);
+
+             const loginResult = await login({ ...userData, token: response.data.token });
 
              if (loginResult.success) {
-               navigate(response.data.data.role === 'agent' ? "/agent-dashboard" : "/user-dashboard", { replace: true });
+               navigate(userData.role === 'agent' ? "/agent-dashboard" : "/user-dashboard", { replace: true });
              } else {
                throw new Error(loginResult.error || "Login failed");
              }
