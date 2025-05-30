@@ -12,31 +12,36 @@ const UserDashboard = () => {
       id: 1,
       title: "Life Insurance Policy",
       description: "Secure your family's future with comprehensive life coverage",
-      icon: "🛡️"
+      icon: "🛡️",
+      isAvailable: false
     },
     {
       id: 2,
       title: "Vehicle Insurance Policy",
       description: "Protect your vehicle with customizable coverage options",
-      icon: "🚗"
+      icon: "🚗",
+      isAvailable: false
     },
     {
       id: 3,
       title: "Health Insurance Policy",
       description: "Get the best healthcare coverage for you and your family",
-      icon: "🏥"
+      icon: "🏥",
+      isAvailable: true
     },
     {
       id: 4,
       title: "Home Insurance Policy",
       description: "Safeguard your home against unexpected damages",
-      icon: "🏠"
+      icon: "🏠",
+      isAvailable: false
     },
     {
       id: 5,
       title: "Government Insurance Policies",
       description: "Explore state-sponsored insurance schemes and benefits",
-      icon: "🏛️"
+      icon: "🏛️",
+      isAvailable: false
     }
   ]
 
@@ -44,12 +49,10 @@ const UserDashboard = () => {
     const selectedPolicy = policies.find(p => p.id === id)
     setSelectedPolicies(new Set([id]))
 
-    if (selectedPolicy.title.includes("Health Insurance")) {
+    if (selectedPolicy.isAvailable) {
       navigate('/basic-questions', { state: { selectedPolicy } })
-    } else if (selectedPolicy.title.includes("Government Insurance")) {
-      navigate('/government-policies')
     } else {
-      navigate('/basic-questions', { state: { selectedPolicy } })
+      navigate('/coming-soon')
     }
   }
 
@@ -68,10 +71,8 @@ const UserDashboard = () => {
               <div className="policy-icon">{policy.icon}</div>
               <h3>{policy.title}</h3>
               <p>{policy.description}</p>
-              {policy.title.includes("Government Insurance") && (
-                <button className="explore-btn">
-                  Explore Government Schemes →
-                </button>
+              {!policy.isAvailable && (
+                <span className="coming-soon-badge">Coming Soon</span>
               )}
             </div>
           ))}

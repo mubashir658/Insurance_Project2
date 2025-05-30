@@ -59,6 +59,17 @@
   transform: scaleX(1);
 }
 
+.coming-soon-badge {
+  display: inline-block;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .box {

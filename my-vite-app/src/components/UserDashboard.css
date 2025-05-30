@@ -1,6 +1,6 @@
 .dashboard-container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f9fafb;
 }
 
@@ -18,19 +18,23 @@ h1 {
 
 .policy-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .policy-card {
   background-color: #ffffff;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .policy-card:hover {
@@ -83,4 +87,33 @@ h1 {
 .premium {
   font-weight: 600;
   color: #2563eb;
+}
+
+.coming-soon-badge {
+  display: inline-block;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .policy-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .policy-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0.5rem;
+  }
 }

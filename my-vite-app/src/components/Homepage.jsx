@@ -10,10 +10,15 @@ function Homepage() {
   const navigate = useNavigate();
 
   const handlePolicyClick = (path, policy) => {
-    if (isLoggedIn) {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    if (policy.title.includes("Health Insurance")) {
       navigate(path, { state: { selectedPolicy: policy } });
     } else {
-      navigate('/login');
+      navigate('/coming-soon');
     }
   };
 
@@ -23,24 +28,28 @@ function Homepage() {
       description: "Secure your family's future with comprehensive life coverage",
       icon: "🛡️",
       path: "/basic-questions",
+      isAvailable: false
     },
     {
       title: "Vehicle Insurance Policy",
       description: "Protect your vehicle with customizable coverage options",
       icon: "🚗",
       path: "/basic-questions",
+      isAvailable: false
     },
     {
       title: "Health Insurance Policy",
       description: "Get the best healthcare coverage for you and your family",
       icon: "🏥",
       path: "/basic-questions",
+      isAvailable: true
     },
     {
       title: "Home Insurance Policy",
       description: "Safeguard your home against unexpected damages",
       icon: "🏠",
       path: "/basic-questions",
+      isAvailable: false
     },
   ];
 
@@ -78,6 +87,7 @@ function Homepage() {
                 description={type.description}
                 icon={type.icon}
                 onClick={() => handlePolicyClick(type.path, type)}
+                isAvailable={type.isAvailable}
               />
             ))}
           </div>
