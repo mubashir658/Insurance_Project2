@@ -170,6 +170,16 @@ textarea:focus {
   margin: 20px 0;
 }
 
+.error-message {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #fecaca;
+}
+
 @media (max-width: 768px) {
   .help-content {
     flex-direction: column;

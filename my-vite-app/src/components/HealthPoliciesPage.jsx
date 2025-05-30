@@ -1,37 +1,68 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { healthPolicies, recommendPolicies } from "../data/healthPolicies";
+import axios from "axios";
 import "./HealthPoliciesPage.css";
 
 const HealthPoliciesPage = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [annualIncome, setAnnualIncome] = useState("");
+  const [policies, setPolicies] = useState([]);
   const [recommendedPolicies, setRecommendedPolicies] = useState([]);
   const [sortOrder, setSortOrder] = useState("none");
   const [showAllPlans, setShowAllPlans] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch policies from backend
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/policies');
+        const healthPolicies = response.data.filter(policy => policy.type === 'Health');
+        setPolicies(healthPolicies);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch policies');
+        setLoading(false);
+        console.error('Error fetching policies:', err);
+      }
+    };
+
+    fetchPolicies();
+  }, []);
 
   useEffect(() => {
-    if (annualIncome) {
-      const recommended = recommendPolicies(parseInt(annualIncome));
-      setRecommendedPolicies(recommended);
+    if (annualIncome && policies.length > 0) {
+      const income = parseInt(annualIncome);
+      if (income < 100000) {
+        setRecommendedPolicies([]);
+      } else {
+        const recommended = policies.filter(policy => {
+          const premium = policy.premium;
+          // Recommend policies where premium is between 5% and 15% of annual income
+          return premium >= income * 0.05 && premium <= income * 0.15;
+        });
+        setRecommendedPolicies(recommended);
+      }
     } else {
-      
       setRecommendedPolicies([]);
     }
-  }, [annualIncome]);
+  }, [annualIncome, policies]);
 
-  const handleViewDetails = (id) => {
+  const handleViewDetails = (policyId) => {
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
+    // Extract the number from policyId (e.g., "HP1" -> "1")
+    const id = policyId.replace('HP', '');
     navigate(`/hpolicy${id}`);
   };
 
   const handleIncomeChange = (e) => {
-    const value = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+    const value = e.target.value.replace(/\D/g, '');
     setAnnualIncome(value);
   };
 
@@ -44,21 +75,26 @@ const HealthPoliciesPage = () => {
   };
 
   const getSortedPolicies = () => {
-    const policiesToSort = showAllPlans ? healthPolicies : recommendedPolicies;
+    const policiesToSort = showAllPlans ? policies : recommendedPolicies;
     
     if (sortOrder === "none") return policiesToSort;
     
     return [...policiesToSort].sort((a, b) => {
-      const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
-      const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
-      
       if (sortOrder === "lowToHigh") {
-        return priceA - priceB;
+        return a.premium - b.premium;
       } else {
-        return priceB - priceA;
+        return b.premium - a.premium;
       }
     });
   };
+
+  if (loading) {
+    return <div className="loading">Loading policies...</div>;
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   return (
     <div className="health-policies">
@@ -76,30 +112,28 @@ const HealthPoliciesPage = () => {
         />
       </div>
 
-      {annualIncome && (
-        <div className="controls-container">
-          <div className="sort-container">
-            <label htmlFor="sortOrder">Sort by Price:</label>
-            <select
-              id="sortOrder"
-              value={sortOrder}
-              onChange={handleSortChange}
-              className="sort-select"
-            >
-              <option value="none">No Sorting</option>
-              <option value="lowToHigh">Low to High</option>
-              <option value="highToLow">High to Low</option>
-            </select>
-          </div>
-          
-          <button
-            className={`show-all-btn ${showAllPlans ? 'active' : ''}`}
-            onClick={handleShowAllPlans}
+      <div className="controls-container">
+        <div className="sort-container">
+          <label htmlFor="sortOrder">Sort by Price:</label>
+          <select
+            id="sortOrder"
+            value={sortOrder}
+            onChange={handleSortChange}
+            className="sort-select"
           >
-            {showAllPlans ? 'Show Recommended Plans' : 'Show All Plans'}
-          </button>
+            <option value="none">No Sorting</option>
+            <option value="lowToHigh">Low to High</option>
+            <option value="highToLow">High to Low</option>
+          </select>
         </div>
-      )}
+        
+        <button
+          className={`show-all-btn ${showAllPlans ? 'active' : ''}`}
+          onClick={handleShowAllPlans}
+        >
+          {showAllPlans ? 'Show Recommended Plans' : 'Show All Plans'}
+        </button>
+      </div>
 
       {!annualIncome && (
         <div className="empty-state">
@@ -117,23 +151,23 @@ const HealthPoliciesPage = () => {
       <div className="policy-list">
         {getSortedPolicies().map((policy) => (
           <div 
-            key={policy.id} 
-            className={`policy-card ${policy.recommended && !showAllPlans ? 'recommended' : ''}`}
+            key={policy.policyId} 
+            className={`policy-card ${!showAllPlans ? 'recommended' : ''}`}
           >
-            {policy.recommended && !showAllPlans && (
+            {!showAllPlans && (
               <div className="recommended-badge">Recommended</div>
             )}
-            <h2>{policy.name}</h2>
-            <p className="price">{policy.price}</p>
-            <p className="coverage">Coverage: {policy.coverage}</p>
+            <h2>{policy.title}</h2>
+            <p className="price">₹{policy.premium} <span style={{fontSize: '0.9em', color: '#888'}}>/year</span></p>
+            <p className="coverage">{policy.description}</p>
             <ul>
               {policy.features.map((feature, index) => (
-                <li key={index}>{feature}</li>
+                <li key={index}>{feature.title}: {feature.description}</li>
               ))}
             </ul>
             <button
               className="select-btn"
-              onClick={() => handleViewDetails(policy.id)}
+              onClick={() => handleViewDetails(policy.policyId)}
             >
               View Details
             </button>

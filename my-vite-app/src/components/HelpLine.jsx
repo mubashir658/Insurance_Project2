@@ -1,18 +1,59 @@
 import React, { useState } from "react";
 import "./HelpLine.css";
 import helpBanner from "../assets/img.jpg"; // Ensure this image exists
+import axios from 'axios';
+import { useAuth } from "../context/AuthContext";
 
 function HelpLine() {
+  const { user } = useAuth();
   const [feedback, setFeedback] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the feedback to your backend
-    console.log("Feedback submitted:", feedback);
-    setIsSubmitted(true);
-    setFeedback("");
-    setTimeout(() => setIsSubmitted(false), 3000);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError("Please log in to submit feedback");
+        return;
+      }
+
+      // Get user ID from the token
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) {
+        setError("Invalid token format");
+        return;
+      }
+
+      const payload = JSON.parse(atob(tokenParts[1]));
+      const userId = payload.id;
+
+      if (!userId) {
+        setError("User ID not found in token");
+        return;
+      }
+
+      const response = await axios.post('http://localhost:5000/api/feedback', {
+        userId,
+        feedbackText: feedback
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 201) {
+        setIsSubmitted(true);
+        setFeedback("");
+        setError("");
+        setTimeout(() => setIsSubmitted(false), 3000);
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      setError(error.response?.data?.message || "Failed to submit feedback. Please try again.");
+    }
   };
 
   return (
@@ -62,6 +103,8 @@ function HelpLine() {
       <div className="review-section">
         <h2>Send us your Feedback</h2>
         <p>We value your opinion to improve our services</p>
+        
+        {error && <div className="error-message">{error}</div>}
         
         {isSubmitted ? (
           <div className="success-message">

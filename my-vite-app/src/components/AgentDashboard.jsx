@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 import ClientManagement from "./ClientManagement";
+import FeedbackManagement from "./FeedbackManagement";
 import "./AgentDashboard.css";
 
 const AgentDashboard = () => {
@@ -89,8 +90,8 @@ const AgentDashboard = () => {
       case 'policies':
         navigate('/agent-policies');
         break;
-      case 'reports':
-        navigate('/agent-reports');
+      case 'feedbacks':
+        setActiveView('feedbacks');
         break;
       default:
         setActiveView('dashboard');
@@ -135,20 +136,22 @@ const AgentDashboard = () => {
               </div>
             </div>
 
-            {/* Reports Card */}
-            <div className="dashboard-card" onClick={() => handleCardClick('reports')}>
-              <div className="card-icon">📊</div>
-              <h2>Reports</h2>
-              <p>Access detailed reports, analytics, and performance metrics.</p>
+            {/* Feedbacks Card */}
+            <div className="dashboard-card" onClick={() => handleCardClick('feedbacks')}>
+              <div className="card-icon">💬</div>
+              <h2>Customer Feedbacks</h2>
+              <p>View and manage customer feedbacks, track issues, and improve service quality.</p>
               <div className="card-stats">
-                <span>Monthly Sales: ₹{(clientStats.newClients * 25000).toLocaleString() || '0'}</span>
-                <span>Conversion Rate: {clientStats.totalClients > 0 ? '25%' : '0%'}</span>
+                <span>Total Feedbacks: {clientStats.totalClients > 0 ? Math.round(clientStats.totalClients * 0.3) : '0'}</span>
+                <span>Response Rate: {clientStats.totalClients > 0 ? '85%' : '0%'}</span>
               </div>
             </div>
           </div>
-        ) : (
+        ) : activeView === 'clients' ? (
           <ClientManagement />
-        )}
+        ) : activeView === 'feedbacks' ? (
+          <FeedbackManagement />
+        ) : null}
       </div>
     </div>
   );

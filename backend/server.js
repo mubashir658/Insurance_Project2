@@ -5,6 +5,8 @@ import cors from "cors";
 import authRoutes from "./routes/AuthRoutes.js";
 import basicQuestionRoutes from "./routes/BasicQuestionRoutes.js";
 import profileRoutes from './routes/ProfileRoutes.js';
+import feedbackRoutes from './routes/feedback.js';
+import policyRoutes from './routes/policies.js';
 
 dotenv.config();
 
@@ -13,7 +15,7 @@ const app = express();
 // Configure CORS to allow requests from the frontend
 app.use(cors({
   origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
@@ -30,18 +32,11 @@ app.use((req, res, next) => {
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/insurance_db', {
+    await mongoose.connect('mongodb://127.0.0.1:27017/insurance_db', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    console.log("MongoDB Connected");
-    const db = mongoose.connection.db;
-    const collections = await db.listCollections().toArray();
-    const collectionNames = collections.map(c => c.name);
-    if (!collectionNames.includes('customers')) await db.createCollection('customers');
-    if (!collectionNames.includes('agents')) await db.createCollection('agents');
-    if (!collectionNames.includes('basicquestions')) await db.createCollection('basicquestions');
-    console.log("Available collections:", collectionNames);
+    console.log("MongoDB Connected Successfully");
   } catch (error) {
     console.error("MongoDB connection error:", error.message);
     process.exit(1);
@@ -53,17 +48,15 @@ connectDB();
 app.use("/auth", authRoutes);
 app.use("/api/basic-questions", basicQuestionRoutes);
 app.use("/api", profileRoutes);
+app.use("/api/feedback", feedbackRoutes);
+app.use("/api/policies", policyRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    cors: {
-      origins: ["http://localhost:5173", "http://127.0.0.1:5173"],
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-    }
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
