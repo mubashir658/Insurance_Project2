@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 import Policy from '../models/Policy.js';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Set strictQuery to false to suppress the deprecation warning
 mongoose.set('strictQuery', false);
@@ -10,7 +14,7 @@ const policies = [
     title: "Health Shield",
     description: "Premium health insurance with extensive coverage",
     type: "Health",
-    premium: 12000,
+    premium: 5550,
     features: [
       {
         title: "500+ Network Hospitals",
@@ -30,9 +34,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 12000,
-      "2Y": 23000,
-      "3Y": 34000
+      "1Y": 5550,
+      "2Y": 10683,
+      "3Y": 15400
     },
     riders: [
       {
@@ -52,7 +56,7 @@ const policies = [
     title: "Family Health Plus",
     description: "Comprehensive family floater health insurance plan",
     type: "Health",
-    premium: 15000,
+    premium: 7998,
     features: [
       {
         title: "Family Coverage",
@@ -72,9 +76,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 15000,
-      "2Y": 29000,
-      "3Y": 42000
+      "1Y": 7998,
+      "2Y": 15195,
+      "3Y": 22192
     },
     riders: [
       {
@@ -94,7 +98,7 @@ const policies = [
     title: "Senior Care",
     description: "Specialized health insurance for senior citizens",
     type: "Health",
-    premium: 20000,
+    premium: 42000,
     features: [
       {
         title: "No Age Limit",
@@ -114,9 +118,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 20000,
-      "2Y": 38000,
-      "3Y": 54000
+      "1Y": 42000,
+      "2Y": 79800,
+      "3Y": 113400
     },
     riders: [
       {
@@ -136,7 +140,7 @@ const policies = [
     title: "Critical Care",
     description: "Specialized coverage for critical illnesses",
     type: "Health",
-    premium: 18000,
+    premium: 6000,
     features: [
       {
         title: "40+ Critical Illnesses",
@@ -156,9 +160,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 18000,
-      "2Y": 34200,
-      "3Y": 48600
+      "1Y": 6000,
+      "2Y": 11400,
+      "3Y": 16200
     },
     riders: [
       {
@@ -178,7 +182,7 @@ const policies = [
     title: "Maternity Care",
     description: "Comprehensive maternity health insurance",
     type: "Health",
-    premium: 25000,
+    premium: 36000,
     features: [
       {
         title: "Maternity Coverage",
@@ -198,9 +202,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 25000,
-      "2Y": 47500,
-      "3Y": 67500
+      "1Y": 36000,
+      "2Y": 68400,
+      "3Y": 97200
     },
     riders: [
       {
@@ -220,7 +224,7 @@ const policies = [
     title: "Diabetes Care",
     description: "Specialized health insurance for diabetics",
     type: "Health",
-    premium: 15000,
+    premium: 48000,
     features: [
       {
         title: "Diabetes Coverage",
@@ -240,9 +244,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 15000,
-      "2Y": 28500,
-      "3Y": 40500
+      "1Y": 48000,
+      "2Y": 91200,
+      "3Y": 129600
     },
     riders: [
       {
@@ -262,7 +266,7 @@ const policies = [
     title: "Cancer Care",
     description: "Specialized health insurance for cancer treatment",
     type: "Health",
-    premium: 30000,
+    premium: 21600,
     features: [
       {
         title: "Cancer Treatment",
@@ -282,9 +286,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 30000,
-      "2Y": 57000,
-      "3Y": 81000
+      "1Y": 21600,
+      "2Y": 41040,
+      "3Y": 58320
     },
     riders: [
       {
@@ -346,7 +350,7 @@ const policies = [
     title: "Student Health",
     description: "Affordable health insurance for students",
     type: "Health",
-    premium: 3000,
+    premium: 60000,
     features: [
       {
         title: "Basic Coverage",
@@ -366,9 +370,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 3000,
-      "2Y": 5700,
-      "3Y": 8100
+      "1Y": 60000,
+      "2Y": 114000,
+      "3Y": 162000
     },
     riders: [
       {
@@ -388,7 +392,7 @@ const policies = [
     title: "Women's Health",
     description: "Specialized health insurance for women",
     type: "Health",
-    premium: 12000,
+    premium: 30000,
     features: [
       {
         title: "Women's Health",
@@ -408,9 +412,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 12000,
-      "2Y": 22800,
-      "3Y": 32400
+      "1Y": 30000,
+      "2Y": 57000,
+      "3Y": 81000
     },
     riders: [
       {
@@ -430,7 +434,7 @@ const policies = [
     title: "Corporate Health",
     description: "Group health insurance for corporate employees",
     type: "Health",
-    premium: 8000,
+    premium: 18000,
     features: [
       {
         title: "Group Coverage",
@@ -450,9 +454,9 @@ const policies = [
       }
     ],
     durations: {
-      "1Y": 8000,
-      "2Y": 15200,
-      "3Y": 21600
+      "1Y": 18000,
+      "2Y": 34200,
+      "3Y": 48600
     },
     riders: [
       {
@@ -471,29 +475,46 @@ const policies = [
 
 const seedDatabase = async () => {
   try {
+    console.log('Starting database seeding process...');
+    
     // Connect to MongoDB
-    await mongoose.connect('mongodb://127.0.0.1:27017/mohd', {
+    const mongoURI = 'mongodb://127.0.0.1:27017/insurance_db';
+    console.log(`Attempting to connect to MongoDB at ${mongoURI}`);
+    
+    await mongoose.connect(mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    console.log('Connected to MongoDB');
+    console.log('Successfully connected to MongoDB');
+
+    // Check if database exists
+    const adminDb = mongoose.connection.db.admin();
+    const dbList = await adminDb.listDatabases();
+    const dbExists = dbList.databases.some(db => db.name === 'insurance_db');
+    console.log(`Database 'insurance_db' exists: ${dbExists}`);
 
     // Drop the existing collection
-    await mongoose.connection.collection('policies').drop().catch(err => {
+    try {
+      console.log('Attempting to drop existing policies collection...');
+      await mongoose.connection.collection('policies').drop();
+      console.log('Successfully dropped existing policies collection');
+    } catch (err) {
       if (err.code === 26) {
-        console.log('Collection does not exist, creating new one');
+        console.log('Collection does not exist, will create new one');
       } else {
+        console.error('Error dropping collection:', err);
         throw err;
       }
-    });
+    }
 
     // Insert new policies
+    console.log(`Attempting to insert ${policies.length} policies...`);
     const result = await Policy.insertMany(policies);
-    console.log('Successfully seeded policies:', result);
+    console.log(`Successfully inserted ${result.length} policies`);
 
     // Verify the data
     const count = await Policy.countDocuments();
-    console.log(`Total policies in database: ${count}`);
+    console.log(`Verification: Total policies in database: ${count}`);
 
     // List all policies
     const allPolicies = await Policy.find({});
@@ -510,10 +531,15 @@ const seedDatabase = async () => {
     console.log('\nDatabase connection closed');
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('Error during database seeding:', error);
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.close();
+      console.log('Database connection closed after error');
+    }
     process.exit(1);
   }
 };
 
 // Run the seed function
+console.log('Starting seed script...');
 seedDatabase(); 

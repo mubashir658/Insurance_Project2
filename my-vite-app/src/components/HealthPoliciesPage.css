@@ -1,190 +1,270 @@
 .health-policies {
-    text-align: center;
-    padding: 20px;
-    background-color: #f4f4f4;
-    min-height: 80vh;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.health-policies h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.user-inputs-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-group label {
+  font-size: 0.9em;
+  color: #495057;
+  font-weight: 500;
+}
+
+.input-field {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9em;
+  width: 100%;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.selected-conditions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.condition-tag {
+  display: inline-flex;
+  align-items: center;
+  background: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  gap: 5px;
+}
+
+.condition-tag button {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.condition-tag button:hover {
+  color: #dc3545;
+}
+
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-select {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.show-all-btn {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.show-all-btn:hover {
+  background: #0056b3;
+}
+
+.show-all-btn.active {
+  background: #6c757d;
+}
+
+.recommendation-info {
+  background: #e9ecef;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.recommendation-info h2 {
+  color: #2c3e50;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.recommendation-info p {
+  color: #495057;
+  margin-bottom: 10px;
+}
+
+.recommendation-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.recommendation-info li {
+  color: #6c757d;
+  font-size: 0.9em;
+}
+
+.policy-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.policy-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.policy-card:hover {
+  transform: translateY(-2px);
+}
+
+.policy-card h2 {
+  color: #2c3e50;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.policy-card .price {
+  font-size: 1.5em;
+  color: #28a745;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.policy-card .coverage {
+  color: #6c757d;
+  margin-bottom: 15px;
+}
+
+.policy-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.policy-card li {
+  color: #495057;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.policy-card li:before {
+  content: "✓";
+  color: #28a745;
+}
+
+.view-details-btn {
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.view-details-btn:hover {
+  background: #0056b3;
+}
+
+.recommended-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #28a745;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .user-inputs-container {
+    grid-template-columns: 1fr;
   }
   
   .controls-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin: 20px 0;
-  }
-  
-  .income-input-container {
-    margin: 20px auto;
-    max-width: 400px;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .income-input-container label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #2c3e50;
-  }
-  
-  .income-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-    text-align: center;
-  }
-  
-  .empty-state {
-    margin: 40px auto;
-    padding: 20px;
-    max-width: 500px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #666;
-  }
-  
-  .recommendation-info {
-    margin: 20px 0;
-    padding: 15px;
-    background: #e8f5e9;
-    border-radius: 10px;
-    color: #2c3e50;
-  }
-  
-  .recommendation-info h2 {
-    margin: 0;
-    font-size: 1.5em;
-    color: #27ae60;
-  }
-  
-  .policy-list {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-  }
-  
-  .policy-card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    width: 350px;  /* Rectangular shape */
-    min-height: 220px; /* Ensuring enough space */
-    display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s;
-    position: relative;
+    align-items: stretch;
   }
   
-  .policy-card.recommended {
-    border: 2px solid #27ae60;
-    box-shadow: 0px 4px 12px rgba(39, 174, 96, 0.2);
+  .recommendation-info ul {
+    flex-direction: column;
+    gap: 8px;
   }
-  
-  .recommended-badge {
-    position: absolute;
-    top: -10px;
-    right: 20px;
-    background: #27ae60;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.8em;
-    font-weight: bold;
-  }
-  
-  .policy-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .policy-card h2 {
-    margin: 0 0 10px 0;
-    color: #2c3e50;
-    font-size: 1.2em;
-  }
-  
-  .price {
-    font-size: 1.3em;
-    color: #27ae60;
-    font-weight: bold;
-    margin: 10px 0;
-  }
-  
-  .coverage {
-    color: #666;
-    margin: 10px 0;
-  }
-  
-  .policy-card ul {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
-    text-align: left;
-  }
-  
-  .policy-card li {
-    margin: 5px 0;
-    color: #666;
-    font-size: 0.9em;
-  }
-  
-  .sort-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .sort-select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background: white;
-    font-size: 14px;
-  }
-  
-  .show-all-btn {
-    padding: 8px 16px;
-    background: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s;
-  }
-  
-  .show-all-btn:hover {
-    background: #2980b9;
-  }
-  
-  .show-all-btn.active {
-    background: #2ecc71;
-  }
-  
-  .show-all-btn.active:hover {
-    background: #27ae60;
-  }
-  
-  .select-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 15px;
-    transition: background-color 0.2s;
-  }
-  
-  .select-btn:hover {
-    background: #2980b9;
-  }
+}
   
