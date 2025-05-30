@@ -6,23 +6,36 @@ const router = express.Router();
 // Get all policies
 router.get('/', async (req, res) => {
   try {
+    console.log('Fetching all policies...');
     const policies = await Policy.find();
+    console.log(`Found ${policies.length} policies`);
     res.json(policies);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching policies:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch policies',
+      error: error.message 
+    });
   }
 });
 
 // Get a specific policy by ID
 router.get('/:policyId', async (req, res) => {
   try {
+    console.log('Fetching policy:', req.params.policyId);
     const policy = await Policy.findOne({ policyId: req.params.policyId });
     if (!policy) {
+      console.log('Policy not found:', req.params.policyId);
       return res.status(404).json({ message: 'Policy not found' });
     }
+    console.log('Policy found:', policy.policyId);
     res.json(policy);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching policy:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch policy',
+      error: error.message 
+    });
   }
 });
 

@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import Policy from '../models/Policy.js';
 
+// Set strictQuery to false to suppress the deprecation warning
+mongoose.set('strictQuery', false);
+
 const policies = [
   {
     policyId: "HP2",
