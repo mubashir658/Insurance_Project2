@@ -78,14 +78,14 @@ Follow these steps to set up and run the project locally:
    In the backend terminal (second terminal), start the Node.js backend server:
 
    ```bash
-   npm run dev
+   npm start
    ```
 
 8. **Run the Frontend**\
    In the frontend terminal (first terminal), start the React development server:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
 9. **Access the Website**\
