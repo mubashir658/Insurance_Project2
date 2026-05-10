@@ -30,7 +30,7 @@ const AgentDashboard = () => {
         }
 
         console.log('Fetching client data for dashboard...');
-        const response = await axios.get('http://localhost:5000/api/basic-questions', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/basic-questions`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

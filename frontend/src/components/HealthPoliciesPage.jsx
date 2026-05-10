@@ -49,7 +49,7 @@ const HealthPoliciesPage = () => {
   useEffect(() => {
     const fetchPolicies = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/policies');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/policies`);
         const healthPolicies = response.data.filter(policy => policy.type === 'Health');
         
         // Map the policies to match their corresponding HPolicy pages

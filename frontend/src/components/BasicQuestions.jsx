@@ -31,7 +31,7 @@ import React, { useState, useEffect } from 'react';
              return;
            }
 
-           const response = await axios.get('http://localhost:5000/api/basic-questions/user-data', {
+           const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/basic-questions/user-data`, {
              headers: {
                'Authorization': `Bearer ${token}`
              }
@@ -80,7 +80,7 @@ import React, { useState, useEffect } from 'react';
          console.log('Token retrieved:', token);
          if (!token) throw new Error('Please log in to continue');
          
-         const response = await axios.post('http://localhost:5000/api/basic-questions', {
+         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/basic-questions`, {
            ...formData,
            smoker: parseInt(formData.smoker),
            chronic_disease: parseInt(formData.chronic_disease),

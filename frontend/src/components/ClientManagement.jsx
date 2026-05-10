@@ -24,7 +24,7 @@ const ClientManagement = () => {
                 }
                 
                 console.log('Fetching client data from API...');
-                const response = await axios.get('http://localhost:5000/api/basic-questions', {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/basic-questions`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -66,14 +66,14 @@ const ClientManagement = () => {
     const testApiConnection = async () => {
         try {
             // Test basic API connectivity (no auth required)
-            const basicResponse = await axios.get('http://localhost:5000/api/basic-questions/test');
+            const basicResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/basic-questions/test`);
             
             // Test authenticated endpoint
             const token = localStorage.getItem('token');
             let authResponse = { data: 'Not tested - No token available' };
             
             if (token) {
-                authResponse = await axios.get('http://localhost:5000/api/basic-questions/auth-test', {
+                authResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/basic-questions/auth-test`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'

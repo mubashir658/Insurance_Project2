@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import api from '../services/api';
 import './Profile.css';
 
 const Profile = () => {
@@ -30,11 +31,7 @@ const Profile = () => {
         }
 
         console.log('Fetching profile with token:', token);
-        const response = await axios.get('http://localhost:5000/api/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const response = await api.get('/api/profile');
 
         console.log('Profile response:', response.data);
 
@@ -98,14 +95,10 @@ const Profile = () => {
       }
 
       console.log('Updating profile with data:', formData);
-      const response = await axios.put('http://localhost:5000/api/profile', {
+      const response = await api.put('/api/profile', {
         fullName: formData.fullName,
         phone: formData.phone,
         address: formData.address
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
       });
 
       console.log('Update response:', response.data);

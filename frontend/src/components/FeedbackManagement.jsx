@@ -22,7 +22,7 @@ const FeedbackManagement = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:5000/api/feedback', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/feedback`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ const FeedbackManagement = () => {
 
       console.log('Making PATCH request to update feedback status');
       const response = await axios.patch(
-        `http://localhost:5000/api/feedback/${feedbackId}`, 
+        `${import.meta.env.VITE_API_URL}/api/feedback/${feedbackId}`, 
         { isSolved },
         {
           headers: {

@@ -10,7 +10,7 @@ const PolicyEnrollment = ({ policyId, isProminent }) => {
   const handleEnrollment = async () => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/enrollments', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/enrollments`, {
         policyId,
         isProminent
       });

@@ -23,7 +23,7 @@ const PredictionForm = () => {
     setLoading(true);
     
     try {
-      const response = await axios.post('/api/predict', formData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/predict`, formData);
       setPrediction(response.data);
     } catch (error) {
       console.error('Prediction error:', error);

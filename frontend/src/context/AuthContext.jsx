@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import api from "../services/api";
 import Loading from "../components/Loading";
 
 export const AuthContext = createContext();
@@ -18,11 +19,7 @@ export const AuthProvider = ({ children }) => {
       if (storedToken && storedUser) {
         try {
           // Verify token with backend
-          const response = await axios.get('http://localhost:5000/api/profile', {
-            headers: {
-              'Authorization': `Bearer ${storedToken}`
-            }
-          });
+          const response = await api.get('/api/profile');
 
           if (response.data.success) {
             const userData = response.data.data;

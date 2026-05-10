@@ -11,7 +11,7 @@ const HPolicy1 = () => {
   useEffect(() => {
     const fetchPolicy = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/policies/${policyId}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/policies/${policyId}`);
         setPolicyData(response.data);
       } catch (err) {
         console.error(`Error fetching policy ${policyId}:`, err);

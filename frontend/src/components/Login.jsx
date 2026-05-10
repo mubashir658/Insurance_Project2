@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-   import axios from "axios";
+  import axios from "axios";
+  import api from "../services/api";
    import { useNavigate } from "react-router-dom";
    import { useAuth } from "../context/AuthContext.jsx";
    import "./Login.css";
@@ -65,10 +66,8 @@ import React, { useState } from "react";
            };
 
        try {
-         console.log(`Sending POST to http://localhost:5000${endpoint} with:`, payload);
-         const response = await axios.post(`http://localhost:5000${endpoint}`, payload, {
-           headers: { "Content-Type": "application/json" },
-         });
+        console.log(`Sending POST to ${import.meta.env.VITE_API_URL}${endpoint} with:`, payload);
+        const response = await api.post(endpoint, payload);
          console.log("Login response:", response.data);
 
          if (response.data.success) {

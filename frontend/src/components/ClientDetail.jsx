@@ -17,7 +17,7 @@ const ClientDetail = ({ agentId }) => {
 
   const fetchClientDetails = async () => {
     try {
-      const response = await axios.get(`/api/enrollments/${enrollmentId}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/enrollments/${enrollmentId}`);
       if (response.data.success) {
         setClient(response.data.data);
         setNotes(response.data.data.notes || '');
@@ -32,7 +32,7 @@ const ClientDetail = ({ agentId }) => {
 
   const handleUpdateNotes = async () => {
     try {
-      const response = await axios.put(`/api/enrollments/${enrollmentId}/notes`, {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/enrollments/${enrollmentId}/notes`, {
         notes,
         agentId
       });

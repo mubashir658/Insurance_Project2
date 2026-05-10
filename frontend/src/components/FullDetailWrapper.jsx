@@ -22,7 +22,7 @@ const FullDetailWrapper = () => {
       };
       
       // Send form data to the backend
-      const response = await axios.post('http://localhost:5000/api/full-detail', completeData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/full-detail`, completeData);
       
       if (response.data.success) {
         // Navigate to thank you page with the form data
