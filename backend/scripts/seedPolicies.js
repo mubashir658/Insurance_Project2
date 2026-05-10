@@ -478,9 +478,9 @@ const seedDatabase = async () => {
     console.log('Starting database seeding process...');
     
     // Connect to MongoDB
-    const mongoURI = 'mongodb://127.0.0.1:27017/insurance_db';
+    const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/insurance_db';
     console.log(`Attempting to connect to MongoDB at ${mongoURI}`);
-    
+
     await mongoose.connect(mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true

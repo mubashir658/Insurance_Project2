@@ -44,4 +44,4 @@ const PolicyEnrollment = ({ policyId, isProminent }) => {
   );
 };
 
-export default PolicyEnrollment; 
+export default PolicyEnrollment;

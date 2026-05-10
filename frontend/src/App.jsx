@@ -29,6 +29,10 @@ import Profile from './components/Profile';
 import GovernmentPolicies from './components/GovernmentPolicies';
 import Chatbot from './components/Chatbot';
 import ComingSoonPage from './components/ComingSoonPage'
+import Claims from './components/Claims';
+import Documents from './components/Documents';
+import Notifications from './components/Notifications';
+import PolicyManagement from './components/PolicyManagement';
 
 function App() {
   return (
@@ -73,6 +77,10 @@ function App() {
         <Route path="/hpolicy12" element={<HPolicy12 />} />
         <Route path="/government-policies" element={<GovernmentPolicies />} />
         <Route path="/government-policy/:id" element={<GovernmentPolicies />} />
+        <Route path="/claims" element={<ProtectedRoute><Claims /></ProtectedRoute>} />
+        <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+        <Route path="/policy-management" element={<ProtectedRoute requiredRole="agent"><PolicyManagement /></ProtectedRoute>} />
         <Route path="/coming-soon" element={<ComingSoonPage />} />
         <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>

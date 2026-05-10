@@ -154,4 +154,4 @@ const ClientDetail = ({ agentId }) => {
   );
 };
 
-export default ClientDetail; 
+export default ClientDetail;

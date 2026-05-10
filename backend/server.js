@@ -32,7 +32,8 @@ app.use((req, res, next) => {
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/insurance_db', {
+    const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/insurance_db';
+    await mongoose.connect(mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

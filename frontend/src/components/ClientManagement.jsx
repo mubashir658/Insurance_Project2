@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ClientManagement.css';
 
@@ -55,6 +56,8 @@ const ClientManagement = () => {
         fetchClients();
     }, []);
 
+    const navigate = useNavigate();
+
     if (loading) {
         return <div className="loading">Loading client data...</div>;
     }
@@ -95,7 +98,10 @@ const ClientManagement = () => {
     if (error) {
         return (
             <div className="client-management">
-                <h2>Client Management</h2>
+                        <div style={{display:'flex',alignItems:'center',gap:12}}>
+                                    <button onClick={() => navigate(-1)} aria-label="Go back" style={{fontSize:20,background:'transparent',border:'none',cursor:'pointer'}}>←</button>
+                                    <h2>Client Management</h2>
+                                </div>
                 <div className="error">
                     <p>{error}</p>
                     {debugInfo && (
@@ -140,7 +146,10 @@ const ClientManagement = () => {
     if (clients.length === 0) {
         return (
             <div className="client-management">
-                <h2>Client Management</h2>
+                                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                                    <button onClick={() => navigate(-1)} aria-label="Go back" style={{fontSize:20,background:'transparent',border:'none',cursor:'pointer'}}>←</button>
+                                    <h2>Client Management</h2>
+                                </div>
                 <div className="no-clients">
                     <p>No client data available at this time.</p>
                 </div>
@@ -150,7 +159,10 @@ const ClientManagement = () => {
 
     return (
         <div className="client-management">
-            <h2>Client Management</h2>
+                        <div style={{display:'flex',alignItems:'center',gap:12}}>
+                            <button onClick={() => navigate(-1)} aria-label="Go back" style={{fontSize:20,background:'transparent',border:'none',cursor:'pointer'}}>←</button>
+                            <h2>Client Management</h2>
+                        </div>
             <div className="clients-count">
                 <p>Total Clients: {clients.length}</p>
             </div>

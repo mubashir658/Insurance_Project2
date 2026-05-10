@@ -88,7 +88,7 @@ const AgentDashboard = () => {
         setActiveView('clients');
         break;
       case 'policies':
-        navigate('/agent-policies');
+        navigate('/policy-management');
         break;
       case 'feedbacks':
         setActiveView('feedbacks');
@@ -131,8 +131,7 @@ const AgentDashboard = () => {
               <h2>Policy Management</h2>
               <p>Manage insurance policies, view policy details, and handle policy-related tasks.</p>
               <div className="card-stats">
-                <span>Active Policies: {clientStats.totalClients > 0 ? clientStats.totalClients : '0'}</span>
-                <span>Pending Approvals: {Math.round(clientStats.totalClients * 0.1) || 0}</span>
+                <span>Active Policies: 2</span>
               </div>
             </div>
 

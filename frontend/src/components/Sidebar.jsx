@@ -18,6 +18,9 @@ const Sidebar = () => {
       case 'policies':
         navigate('/health-policies');
         break;
+      case 'policyManagement':
+        navigate('/policy-management');
+        break;
       case 'claims':
         navigate('/claims');
         break;
@@ -39,6 +42,7 @@ const Sidebar = () => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'policies', label: 'My Policies', icon: '📄' },
+    { id: 'policyManagement', label: 'Policy Management', icon: '⚙️' },
     { id: 'claims', label: 'Claims', icon: '📝' },
     { id: 'documents', label: 'Documents', icon: '📁' },
     { id: 'notifications', label: 'Notifications', icon: '🔔' },
