@@ -1,6 +1,8 @@
-Flask>=2.0
-numpy>=1.23
-pandas>=1.5
-scikit-learn>=1.0
-tensorflow>=2.9
-joblib>=1.2
+Flask==3.0.3
+flask-cors==5.0.0
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.1
+tensorflow-cpu==2.15.0
+joblib==1.4.2
+gunicorn==22.0.0
