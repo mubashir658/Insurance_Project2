@@ -72,11 +72,29 @@ router.post('/', authMiddleware, async (req, res) => {
     const formData = req.body;
     const userId = req.user.id;
     
-    // Get prediction from Flask service
-    const flaskResponse = await axios.post('http://localhost:5001/predict', formData, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-    const { result, probability } = flaskResponse.data;
+      // Get prediction from Hugging Face Space with detailed error logging
+      let flaskResponse;
+      try {
+        flaskResponse = await axios.post(
+          "https://mohammedali786-dl.hf.space/predict",
+          formData,
+          {
+            headers: { "Content-Type": "application/json" },
+            timeout: 60000
+          }
+        );
+      } catch (hfErr) {
+        console.error('Hugging Face request failed:', hfErr.message);
+        if (hfErr.response) {
+          console.error('HF response status:', hfErr.response.status);
+          console.error('HF response data:', JSON.stringify(hfErr.response.data));
+        }
+        throw hfErr;
+      }
+
+      // Response expected as { result, probability }
+      const result = flaskResponse.data?.result ?? flaskResponse.data?.prediction ?? flaskResponse.data;
+      const probability = flaskResponse.data?.probability ?? flaskResponse.data?.prob ?? null;
 
     // Always check for existing entry for this user
     const existingEntry = await BasicQuestion.findOne({ userId: userId });
@@ -144,6 +162,8 @@ router.post('/', authMiddleware, async (req, res) => {
     });
   }
 });
+
+// NOTE: Dev-only test route removed. Use authenticated API or local test scripts for verification.
 
    // GET route to fetch all client data for agents
    router.get('/', authMiddleware, async (req, res) => {
