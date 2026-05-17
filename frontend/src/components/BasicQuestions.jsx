@@ -233,37 +233,13 @@ const BasicQuestions = () => {
         backendResponse.data
       );
 
-      // ---------------------------------------------------
-      // CALL DL MODEL API
-      // ---------------------------------------------------
-
-
-      const flaskResponse = await axios.post(
-        "https://mohammedali786-dl.hf.space/predict",
-        cleanedData,
-        {
-          headers: {
-            "Content-Type": "application/json"
-          },
-          timeout: 60000
-        }
-      );
-
-      console.log('Prediction Response:', flaskResponse.data);
-
-      // ---------------------------------------------------
-      // STORE PREDICTION RESULT
-      // ---------------------------------------------------
-
-      localStorage.setItem('predictionResult', JSON.stringify(flaskResponse.data));
-
-      // ---------------------------------------------------
-      // NAVIGATE
-      // ---------------------------------------------------
+      // Backend now calls DL model internally and stores the result.
+      // We route to health-policies after a successful save.
+      // The prediction result is stored by the backend; fetch from localStorage if needed.
 
       if (backendResponse.data.success) {
         navigate('/health-policies', {
-          state: { prediction: flaskResponse.data }
+          state: { prediction: null }  // prediction is handled server-side
         });
       } else {
         throw new Error(backendResponse.data.message || 'Failed to save data');

@@ -75,8 +75,12 @@ router.post('/', authMiddleware, async (req, res) => {
       // Get prediction from Hugging Face Space with detailed error logging
       let flaskResponse;
       try {
+        const dlModelUrl = process.env.DL_MODEL_URL;
+        if (!dlModelUrl) {
+          throw new Error("DL_MODEL_URL environment variable is not set");
+        }
         flaskResponse = await axios.post(
-          "https://mohammedali786-dl.hf.space/predict",
+          dlModelUrl,
           formData,
           {
             headers: { "Content-Type": "application/json" },
